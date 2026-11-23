@@ -1,0 +1,1751 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Agent 脚下的六层楼：计算机常识地图</title>
+<meta name="description" content="学 Agent 之前需要的计算机常识，分成六层，每层配可以动手点的动画。">
+<style>
+:root{
+  --concrete:#E4E7E3; --plate:#FAFBF8; --sunk:#D3D8D2; --rule:#BFC6C0;
+  --ink:#17283A; --ink2:#4B5B6C;
+  --panel:#17283A; --panel-ink:#E4E7E3;
+  --f1:#B8442B; --f2:#A96B06; --f3:#2B8A57; --f4:#0D8294; --f5:#2F5FC4; --f6:#6D45C2;
+  --on-f:#FFFFFF; --ok:#1E8E4E; --bad:#C6352B;
+  --din:"DIN Condensed","DIN Alternate","Bahnschrift","Roboto Condensed","Arial Narrow",sans-serif;
+  --han:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --code:"SF Mono",ui-monospace,Menlo,Consolas,"PingFang SC",monospace;
+  --lift:86px;
+  --f:var(--f6);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --concrete:#1A2027; --plate:#252D36; --sunk:#141A20; --rule:#3B4652;
+    --ink:#E8ECEF; --ink2:#A8B3BE;
+    --panel:#0E1318; --panel-ink:#E8ECEF;
+    --f1:#E5694C; --f2:#DC9A2C; --f3:#4CB87D; --f4:#39B2C5; --f5:#6E97F0; --f6:#A281F2;
+    --on-f:#10161C; --ok:#4CB87D; --bad:#F0705F;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--concrete);color:var(--ink);font:17px/1.8 var(--han);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,p,ol,ul,table,pre{margin:0}
+code,pre{font-family:var(--code);font-size:.88em}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--f5);outline-offset:3px}
+.hid{display:none!important}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@keyframes pop{from{transform:scale(.82);opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
+}
+
+/* 电梯面板 */
+.lift{position:fixed;inset:0 auto 0 0;width:var(--lift);background:var(--panel);color:var(--panel-ink);z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+.lift ol{list-style:none;padding:0;display:flex;flex-direction:column;gap:13px}
+.lift .word{font-size:13px;font-weight:600;text-decoration:none;padding:4px 6px;opacity:.7;border-bottom:3px solid transparent}
+.lift .word[aria-current]{opacity:1;border-bottom-color:var(--panel-ink)}
+.fl{--p:0;position:relative;display:grid;place-items:center;width:50px;height:50px;border-radius:50%;text-decoration:none;color:var(--panel-ink);
+  background:conic-gradient(var(--f) calc(var(--p)*1%),rgba(255,255,255,.2) 0);font:700 28px/1 var(--din)}
+.fl::before{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--panel);transition:background .25s}
+.fl span{position:relative;transform:translateY(3px)}
+.fl[aria-current]{color:var(--on-f);box-shadow:0 0 0 4px color-mix(in srgb,var(--f) 40%,transparent)}
+.fl[aria-current]::before{background:var(--f)}
+
+main{margin-left:var(--lift)}
+.wrap{max-width:1140px;margin:0 auto;padding:0 clamp(20px,4vw,56px)}
+
+/* 楼顶总览 */
+.hero{padding:clamp(48px,7vw,104px) 0 80px}
+.hero h1{font-size:clamp(44px,7.4vw,104px);line-height:1.06;font-weight:600;letter-spacing:-.02em}
+.lede{max-width:33em;margin-top:26px;font-size:clamp(17px,1.5vw,20px);color:var(--ink2)}
+.tower-wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:44px;margin-top:56px;align-items:start}
+.tower{--slab-h:78px;--slab-gap:6px;--at:0;display:grid;grid-template-columns:52px 1fr;gap:10px}
+.shaft{position:relative;background:var(--sunk);border-radius:8px}
+.shaft::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--rule)}
+.cab{position:absolute;left:7px;right:7px;top:9px;height:calc(var(--slab-h) - 18px);background:var(--ink);border-radius:5px;
+  transform:translateY(calc(var(--at)*(var(--slab-h) + var(--slab-gap))));transition:transform .7s cubic-bezier(.6,0,.2,1)}
+.cab::after{content:"";position:absolute;left:50%;top:8px;bottom:8px;width:2px;margin-left:-1px;background:var(--concrete);opacity:.6}
+.slabs{list-style:none;padding:0;display:grid;gap:var(--slab-gap)}
+.slabs a{display:grid;grid-template-columns:60px 1fr;align-items:center;height:var(--slab-h);padding-right:14px;text-decoration:none;border-radius:8px;
+  background:color-mix(in srgb,var(--f) 13%,var(--plate));border-left:12px solid var(--f);transition:background .3s,color .3s}
+.slabs b{font:700 56px/1 var(--din);color:var(--f);text-align:center;transform:translateY(5px);transition:color .3s}
+.slabs .nm{display:block;font-weight:600;font-size:18px;line-height:1.35}
+.slabs .kw{display:block;font-size:13.5px;line-height:1.45;color:var(--ink2);transition:color .3s;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.slabs a.on{background:var(--f);color:var(--on-f)}
+.slabs a.on b,.slabs a.on .kw{color:var(--on-f)}
+.trip .ask{font-size:19px;font-weight:600;line-height:1.5}
+.trip q{quotes:"“" "”"}
+.trip-steps{list-style:none;padding:0;margin-top:14px;display:grid;gap:2px}
+.trip-steps button{appearance:none;border:0;background:transparent;text-align:left;display:grid;grid-template-columns:30px 1fr;column-gap:12px;width:100%;padding:7px 10px;border-radius:8px;cursor:pointer;transition:background .25s,opacity .25s;opacity:.6}
+.trip-steps .tag{grid-row:1/3;width:30px;height:30px;margin-top:2px;border-radius:50%;display:grid;place-items:center;font:700 20px/1 var(--din);color:var(--f);box-shadow:inset 0 0 0 2px var(--f)}
+.trip-steps .tag i{font-style:normal;transform:translateY(2px)}
+.trip-steps .act,.trip-steps .note{min-width:0;overflow-wrap:anywhere}
+.trip-steps .act{font-weight:600;font-size:15.5px;line-height:1.5}
+.trip-steps .act code{font-size:13.5px;font-weight:500}
+.trip-steps .note{font-size:14px;line-height:1.5;color:var(--ink2)}
+.trip-steps button.on{background:var(--plate);opacity:1}
+.trip-steps button.on .tag{background:var(--f);color:var(--on-f)}
+
+/* 楼层 */
+.floor{border-top:14px solid var(--f);padding:64px 0 100px}
+.floor-head{display:flex;gap:clamp(18px,3vw,44px);align-items:flex-end}
+.floor-num{font:700 clamp(150px,21vw,280px)/.74 var(--din);color:var(--f);white-space:nowrap;position:relative;top:.07em}
+.floor-num small{font:600 20px/1 var(--han);margin-left:4px}
+.floor h2,.learn h2{font-size:clamp(30px,4.2vw,52px);line-height:1.15;font-weight:600;letter-spacing:-.01em}
+.floor-lede{max-width:32em;margin-top:14px;font-size:19px;color:var(--ink2)}
+
+.stage{margin-top:68px}
+.stage h3,.terms h3,.plan h3{font-size:25px;font-weight:600;line-height:1.3}
+.stage-intro{max-width:36em;margin-top:6px;color:var(--ink2)}
+.canvas{margin-top:20px;background:var(--plate);border-radius:14px;padding:22px}
+.scroll-x{overflow-x:auto}
+.scroll-x svg{display:block;width:100%;min-width:700px;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.btn{appearance:none;border:2px solid var(--ink);background:var(--ink);color:var(--concrete);font-weight:600;font-size:15px;line-height:1.25;padding:10px 16px;border-radius:8px;cursor:pointer;text-align:left}
+.btn.line{background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.38;cursor:not-allowed}
+.btn code{font-size:14px}
+.btn small{display:block;font-weight:400;font-size:12.5px;opacity:.8;margin-top:2px}
+.seg{display:inline-flex;flex-wrap:wrap;border:2px solid var(--ink);border-radius:8px;overflow:hidden}
+.seg button{appearance:none;border:0;background:transparent;font-weight:600;font-size:15px;line-height:1.25;padding:10px 14px;cursor:pointer}
+.seg button+button{border-left:2px solid var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--concrete)}
+.caption{margin-top:16px;padding-left:14px;border-left:5px solid var(--f);max-width:38em;min-height:3.6em}
+.count{font-size:14px;color:var(--ink2)}
+.aside{max-width:38em;margin-top:16px;color:var(--ink2);font-size:16px}
+h4{font-size:15px;font-weight:600;line-height:1.4}
+h4 small{font-weight:400;color:var(--ink2);margin-left:6px}
+.empty{font-size:14px;color:var(--ink2)}
+.zone{background:var(--concrete);border-radius:10px;padding:14px 16px;min-width:0}
+.ic{width:20px;height:20px;flex:none}
+.tile{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;background:var(--plate);border:2px solid var(--ink);font-size:14.5px;font-weight:600;line-height:1.25;white-space:nowrap}
+.tile.sub{border-style:dashed;font-weight:500;font-size:13.5px}
+.tile.pop{animation:pop .4s}
+
+/* 1 层：程序和进程 */
+.run{display:grid;grid-template-columns:1fr 1.15fr 1.3fr;gap:14px}
+.files{display:grid;gap:8px;margin-top:12px;justify-items:start}
+.tile.prog{border-color:var(--f);color:var(--f)}
+.procs{display:grid;gap:8px;margin-top:12px;min-height:178px;align-content:start}
+.proc{padding:8px 12px;border-radius:8px;border-left:8px solid var(--f);background:color-mix(in srgb,var(--f) 14%,var(--plate));font-size:14px;line-height:1.45;transition:background .2s,color .2s}
+.proc.fresh{animation:pop .35s}
+.proc b{display:block;font-size:15px}
+.proc.on{background:var(--f);color:var(--on-f)}
+.cpu-row{display:flex;gap:12px;align-items:center;margin-top:12px}
+.chip{width:56px;height:56px;flex:none;border-radius:8px;background:var(--ink);color:var(--concrete);display:grid;place-items:center;font:700 24px/1 var(--din);box-shadow:0 0 0 0 var(--f);transition:box-shadow .3s}
+.chip span{transform:translateY(2px)}
+.chip.busy{box-shadow:0 0 0 5px var(--f)}
+.cpu-now{font-size:14px;line-height:1.5}
+.code-lines{list-style:none;counter-reset:l;padding:0;margin-top:12px;font:13px/1.9 var(--code)}
+.code-lines li{counter-increment:l;padding:0 8px;border-radius:4px;white-space:pre-wrap;word-break:break-all}
+.code-lines li::before{content:counter(l);display:inline-block;width:1.5em;color:var(--ink2)}
+.code-lines li.on{background:var(--f);color:var(--on-f)}
+.code-lines li.on::before{color:inherit}
+
+/* 1 层：路径 */
+.path{display:grid;grid-template-columns:minmax(250px,1fr) 1.3fr;gap:24px;align-items:start}
+.tree{background:var(--concrete);border-radius:10px;padding:10px}
+.node{display:flex;align-items:center;gap:8px;width:100%;padding:4px 8px;padding-left:calc(8px + var(--d)*20px);border:0;background:transparent;border-radius:6px;font-size:15px;line-height:1.6;text-align:left;margin:2px 0;transition:background .2s,color .2s}
+button.node{cursor:pointer;font-weight:600;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:var(--f)}
+.node.lit{background:var(--f);color:var(--on-f);text-decoration-color:transparent}
+.node .here{margin-left:auto;font-size:12px;font-weight:600;line-height:1.5;padding:0 8px;border-radius:99px;background:var(--ink);color:var(--concrete)}
+.path-str{font:600 clamp(17px,2.1vw,25px)/1.5 var(--code);margin-top:18px;min-height:3em;word-break:break-all}
+.path-str span{display:inline-block;animation:pop .25s}
+.path-str .dim{color:var(--ink2);font:400 16px/1.8 var(--han)}
+
+/* 2 层：轮换 */
+.slice{display:grid;grid-template-columns:1fr 210px;gap:22px;align-items:center}
+.lane{display:grid;grid-template-columns:9.5em 1fr;gap:12px;align-items:center;padding:10px 12px;border-radius:8px;transition:background .12s}
+.lane+.lane{margin-top:6px}
+.lane-name{font-size:15px;font-weight:600}
+.lane-name code{font-size:13px}
+.bar{height:18px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--f);border-radius:99px}
+.lane.on{background:color-mix(in srgb,var(--f) 24%,var(--plate))}
+.slice.real .lane{background:color-mix(in srgb,var(--f) 9%,var(--plate))}
+.sched{text-align:center}
+.sched .chip{margin:0 auto;width:72px;height:72px;font-size:30px}
+.sched p{font-size:14px;line-height:1.5;margin-top:12px;min-height:3em}
+
+.plain{width:100%;border-collapse:collapse;margin-top:18px;font-size:16px}
+.plain th,.plain td{text-align:left;vertical-align:top;padding:12px 16px 12px 0;border-top:1px solid var(--rule);line-height:1.6;overflow-wrap:anywhere}
+.plain thead th{border-top:0;font-size:13.5px;color:var(--ink2);font-weight:600;padding-bottom:6px}
+.plain tbody th{font-weight:600;white-space:nowrap}
+.plain a{text-decoration-color:var(--f);text-decoration-thickness:2px;text-underline-offset:4px}
+
+/* 2 层：Shell */
+.shell{display:grid;grid-template-columns:1fr 1.2fr;gap:14px}
+.finder{background:var(--concrete);border-radius:10px;padding:14px;min-height:310px}
+.crumb{margin-top:10px;font-size:14px;font-weight:600;padding:6px 10px;background:var(--plate);border-radius:6px}
+.icons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding:6px;margin-left:-6px;border-radius:8px}
+.flash{animation:flash .9s}
+@keyframes flash{0%,60%{box-shadow:0 0 0 3px var(--f)}100%{box-shadow:0 0 0 3px transparent}}
+.preview{margin-top:12px;padding:10px 12px;border-radius:8px;background:var(--plate);border-left:5px solid var(--f);font-size:14px;line-height:1.6}
+.preview b{display:block;font-size:13px;color:var(--ink2)}
+.tty{background:#14212E;color:#DCE6EE;border-radius:10px;padding:14px 16px;font:13.5px/1.75 var(--code);height:310px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+.tty .p{color:#7FD1B0}
+.tty .err{color:#FF9B8A}
+.tty .cur{display:inline-block;width:8px;height:1.1em;background:#DCE6EE;vertical-align:text-bottom;margin-left:1px}
+.cmds{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+
+/* 2 层：Docker */
+.dock{display:grid;grid-template-columns:1fr 80px 1fr;align-items:stretch}
+.env{list-style:none;padding:0;margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.env li{font-size:13px;line-height:1.5;padding:1px 10px;border-radius:99px;background:var(--plate);border:1.5px solid var(--rule)}
+.env .miss{border-style:dashed;color:var(--ink2)}
+.slot{min-height:150px;margin-top:14px;display:grid;place-items:center;border:2px dashed var(--rule);border-radius:10px;padding:12px}
+.road{align-self:center;height:6px;background:repeating-linear-gradient(90deg,var(--rule) 0 12px,transparent 12px 20px)}
+.cargo{display:grid;gap:6px;justify-items:start}
+.crate{padding:8px 12px 12px;border:3px solid var(--f);border-radius:10px;background:color-mix(in srgb,var(--f) 12%,var(--plate))}
+.crate>b{font-size:12.5px;color:var(--f)}
+.result{margin-top:10px;font:13px/1.6 var(--code);min-height:3.2em;white-space:pre-wrap;word-break:break-word}
+.result.ok{color:var(--ok)}
+.result.bad{color:var(--bad)}
+
+/* SVG 通用 */
+svg text{font-family:var(--han);fill:var(--ink)}
+svg .mono{font-family:var(--code);font-size:15px}
+.wire path{stroke:var(--rule);stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.wire .dash{stroke-dasharray:2 10}
+.nd{color:var(--ink)}
+.nd .bx{fill:var(--concrete);stroke:var(--ink);stroke-width:2.5;transition:fill .25s}
+.nd .t,svg .t{font-size:17px;font-weight:600}
+.nd.on{color:var(--on-f)}
+.nd.on .bx{fill:var(--f)}
+.nd.on .t{fill:var(--on-f)}
+.nd[data-node="server"].on .bx{fill:var(--concrete);stroke:var(--f);stroke-width:5}
+svg .sub{font-size:15.5px;fill:var(--ink2)}
+svg .sub.strong{font-weight:600;fill:var(--f)}
+.port rect{fill:var(--plate);stroke:var(--rule);stroke-width:1.5}
+.port.hot rect{fill:var(--f);stroke:var(--f)}
+.port.hot text{fill:var(--on-f)}
+svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
+.notebox{fill:var(--concrete);stroke:var(--ink);stroke-width:2}
+.notebox.good{stroke:var(--ok);stroke-width:3}
+.pkt circle{fill:var(--f);stroke:var(--plate);stroke-width:3}
+.pkt rect{fill:var(--ink)}
+.pkt text{fill:var(--concrete);font-size:14px;font-weight:600}
+.pkt.stuck circle{fill:var(--bad)}
+.barrier path{stroke:var(--bad);stroke-width:5;stroke-linecap:round;fill:none}
+#pxSvg .direct,#pxSvg .via,#pxSvg .barrier{transition:opacity .3s}
+#pxSvg[data-mode="direct"] .via{opacity:.3}
+#pxSvg[data-mode="proxy"] .direct{opacity:.3}
+
+/* 4 层 */
+.api{display:grid;gap:12px}
+.api-flow{display:grid;grid-template-columns:1fr 1.6fr 1.3fr;gap:12px}
+.api-data{display:grid;grid-template-columns:1.2fr 1fr;gap:12px}
+.box{background:var(--concrete);border-radius:10px;padding:12px 14px;border:3px solid transparent;transition:border-color .25s;min-width:0}
+.box.on{border-color:var(--f)}
+.box pre{margin-top:8px;font-size:12.8px;line-height:1.7;white-space:pre-wrap;word-break:break-word;min-height:10.2em}
+.api-data .box pre{min-height:8.5em}
+.box pre .c{color:var(--ink2)}
+.dbt{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+.dbt th,.dbt td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--rule);transition:background .15s,color .15s}
+.dbt th{font:600 12.5px/1.6 var(--code);color:var(--ink2)}
+.dbt tr.scan td{background:var(--sunk)}
+.dbt tr.hit td{background:var(--f);color:var(--on-f)}
+.dbt tr.new td{animation:pop .4s}
+.anno{display:grid;grid-template-columns:auto 1fr;font-size:15px;max-width:46em}
+.anno>*{padding:6px 0;border-bottom:1px solid var(--rule)}
+.anno code{font-size:14px;white-space:pre;padding-right:28px}
+.anno span{color:var(--ink2)}
+
+/* 5 层 */
+.g-line{stroke:var(--ink);stroke-width:4;fill:none;stroke-linejoin:round}
+.g-line.try{stroke:var(--f)}
+.g-line.dash{stroke-dasharray:4 8}
+.g-c circle{fill:var(--plate);stroke:var(--ink);stroke-width:4}
+.g-c text{font:700 20px/1 var(--din)}
+.g-c.try circle{stroke:var(--f)}
+.g-c.head circle{fill:var(--ink)}
+.g-c.head text{fill:var(--concrete)}
+.g-c.try.head circle{fill:var(--f)}
+.g-c.try.head text{fill:var(--on-f)}
+.g-c.fresh{animation:pop .35s;transform-box:fill-box;transform-origin:center}
+.g-flag{font-size:13.5px;font-weight:600}
+.g-lane{font-size:14px;fill:var(--ink2)}
+.cmdline{margin-top:14px;font:14px/1.6 var(--code);background:#14212E;color:#DCE6EE;border-radius:8px;padding:8px 14px;min-height:2.6em}
+.cmdline::before{content:"$ ";color:#7FD1B0}
+.stations{list-style:none;padding:0;display:grid;grid-template-columns:repeat(5,1fr);position:relative}
+.stations::before{content:"";position:absolute;left:10%;right:10%;top:19px;height:6px;background:var(--rule)}
+.stations li{position:relative;text-align:center;padding:0 6px}
+.stations .dot{display:grid;place-items:center;width:44px;height:44px;margin:0 auto 10px;border-radius:50%;background:var(--plate);border:4px solid var(--ink);font-size:20px;font-weight:700;line-height:1;color:#fff;transition:background .25s,border-color .25s}
+.stations b{display:block;font-size:15.5px;line-height:1.4}
+.stations small{display:block;font-size:13px;line-height:1.4;color:var(--ink2)}
+.stations li.now .dot{background:var(--ink)}
+.stations li.ok .dot{background:var(--ok);border-color:var(--ok)}
+.stations li.ok .dot::after{content:"✓"}
+.stations li.bad .dot{background:var(--bad);border-color:var(--bad)}
+.stations li.bad .dot::after{content:"✗"}
+.stations li.skip .dot{border-style:dashed;opacity:.5}
+.logbox{margin-top:20px;background:#14212E;color:#DCE6EE;border-radius:10px;padding:12px 16px;font:13px/1.8 var(--code);min-height:178px;white-space:pre-wrap}
+.logbox .lg{display:inline-block;width:5.4em}
+.logbox .err{color:#FF9B8A}
+.logbox .good{color:#7FD1B0}
+
+/* 6 层 */
+.loop{display:grid;grid-template-columns:minmax(260px,400px) 1fr;gap:26px;align-items:start}
+.loop svg{display:block;width:100%;height:auto}
+.arc{stroke:var(--rule);stroke-width:5;fill:none;transition:stroke .25s}
+.arc.on{stroke:var(--f)}
+.arrh{fill:var(--ink2)}
+.lap{font:700 34px/1 var(--din)}
+.talk{list-style:none;padding:0;display:grid;gap:8px;max-height:430px;overflow:auto}
+.msg{padding:10px 14px;border-radius:10px;background:var(--concrete);font-size:14.5px;line-height:1.6;animation:pop .3s}
+.msg b{display:block;font-size:13px;color:var(--ink2)}
+.msg pre{font-size:12.8px;line-height:1.6;white-space:pre-wrap;margin-top:2px}
+.msg.user{background:var(--ink);color:var(--concrete)}
+.msg.user b{color:inherit;opacity:.7}
+.msg.final{background:var(--f);color:var(--on-f)}
+.msg.final b{color:inherit;opacity:.8}
+.chip-f{display:inline-block;font-size:12.5px;font-weight:600;line-height:1.6;padding:0 10px;border-radius:99px;background:var(--f);color:var(--on-f);text-decoration:none;margin:6px 6px 0 0}
+
+/* 词表 */
+.terms{margin-top:76px}
+.terms-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.terms-count{font-size:14px;color:var(--ink2)}
+.tt{width:100%;border-collapse:collapse;margin-top:14px}
+.tt th,.tt td{text-align:left;vertical-align:top;padding:14px 20px 14px 0;border-top:1px solid var(--rule);font-size:16px;line-height:1.7}
+.tt thead th{border-top:0;font-size:13.5px;font-weight:600;color:var(--ink2);padding-bottom:6px}
+.tt tbody th{font-size:18px;font-weight:600;white-space:nowrap;width:8.2em}
+.tt td:first-child{width:40px;padding-right:0}
+.tt td:last-child{width:38%;font-size:15px;color:var(--ink2);padding-right:0}
+.tt input{width:20px;height:20px;margin:5px 0 0;accent-color:var(--f)}
+
+/* 学法 */
+.learn{--f:var(--ink);border-top:14px solid var(--ink);padding:64px 0 130px}
+.plan{list-style:none;counter-reset:s;padding:0;margin-top:44px;display:grid;gap:44px;max-width:46em}
+.plan>li{counter-increment:s;display:grid;grid-template-columns:58px 1fr;column-gap:20px}
+.plan>li::before{content:counter(s);font:700 84px/.78 var(--din);grid-row:1/4}
+.plan p{margin-top:8px}
+.todo{margin-top:10px;padding-left:1.2em}
+.todo li{margin-top:8px}
+.learn h3.sub-h{font-size:25px;font-weight:600;margin-top:64px}
+.learn .plain{max-width:60em}
+.known{margin-top:56px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.known strong{font:700 44px/1 var(--din);transform:translateY(4px);display:inline-block}
+.foot{margin-top:56px;max-width:44em;font-size:14px;color:var(--ink2)}
+
+@media (max-width:900px){
+  :root{--lift:0px}
+  .lift{inset:auto 0 0 0;width:auto;height:62px;flex-direction:row;gap:8px;padding:0 8px}
+  .lift ol{flex-direction:row-reverse;gap:7px}
+  .fl{width:40px;height:40px;font-size:23px}
+  main{padding-bottom:70px}
+  .tower-wrap,.run,.path,.slice,.shell,.dock,.api-flow,.api-data,.loop{grid-template-columns:1fr}
+  .road{width:6px;height:36px;justify-self:center;background:repeating-linear-gradient(180deg,var(--rule) 0 12px,transparent 12px 20px)}
+  .floor-head{flex-direction:column;align-items:flex-start;gap:20px}
+  .stations small{display:none}
+}
+@media (max-width:760px){
+  body{font-size:16px}
+  .tt thead{display:none}
+  .tt tr{display:grid;grid-template-columns:36px 1fr;border-top:1px solid var(--rule);padding:12px 0}
+  .tt th,.tt td{border:0;padding:0;width:auto!important}
+  .tt td:first-child{grid-row:1/4}
+  .tt td:last-child::before{content:"学 Agent 时：";font-weight:600}
+  .slabs .kw{display:none}
+  .lift{gap:6px}
+  .lift ol{gap:5px}
+  .fl{width:36px;height:36px;font-size:21px}
+  .plain{font-size:14.5px}
+  .plain th,.plain td{padding-right:10px}
+  .canvas{padding:14px}
+  .anno{grid-template-columns:1fr}
+  .anno code{border-bottom:0;padding-bottom:0}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3 6h6l2 2h10v11H3z"/></symbol>
+    <symbol id="i-laptop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="5" width="16" height="11" rx="1"/><path d="M2 19h20"/></symbol>
+    <symbol id="i-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="3" width="16" height="7" rx="1"/><rect x="4" y="14" width="16" height="7" rx="1"/><path d="M8 6.5h.01M8 17.5h.01"/></symbol>
+    <symbol id="i-router" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M12 5v14M5 12h14M9 8l3-3 3 3M9 16l3 3 3-3M8 9l-3 3 3 3M16 9l3 3-3 3"/></symbol>
+  </defs>
+</svg>
+
+<nav class="lift" aria-label="楼层导航">
+  <a class="word" href="#top" data-target="top">总览</a>
+  <ol>
+    <li><a class="fl" href="#f6" data-target="f6" style="--f:var(--f6)" aria-label="第 6 层：Agent 与 Harness"><span>6</span></a></li>
+    <li><a class="fl" href="#f5" data-target="f5" style="--f:var(--f5)" aria-label="第 5 层：软件工程与系统设计"><span>5</span></a></li>
+    <li><a class="fl" href="#f4" data-target="f4" style="--f:var(--f4)" aria-label="第 4 层：后端与数据"><span>4</span></a></li>
+    <li><a class="fl" href="#f3" data-target="f3" style="--f:var(--f3)" aria-label="第 3 层：计算机网络"><span>3</span></a></li>
+    <li><a class="fl" href="#f2" data-target="f2" style="--f:var(--f2)" aria-label="第 2 层：操作系统与开发环境"><span>2</span></a></li>
+    <li><a class="fl" href="#f1" data-target="f1" style="--f:var(--f1)" aria-label="第 1 层：计算机基本常识"><span>1</span></a></li>
+  </ol>
+  <a class="word" href="#learn" data-target="learn">学法</a>
+</nav>
+
+<main>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <h1>Agent 脚下的六层楼</h1>
+    <p class="lede">你让 Agent 做一件事，它的每个动作都落在下面某一层：读文件，敲命令，发请求，查数据，存档。学 Agent 时听不懂的词，多半是这几层里的常识。这一页把六层各走一遍，每层都有能动手点的动画。</p>
+
+    <div class="tower-wrap">
+      <div class="tower" id="tower">
+        <div class="shaft" aria-hidden="true"><div class="cab" id="cab"></div></div>
+        <ol class="slabs" reversed>
+          <li style="--f:var(--f6)"><a href="#f6" data-floor="6"><b>6</b><span><span class="nm">Agent 与 Harness</span><span class="kw">工具调用、工作流、Eval、监控与回滚</span></span></a></li>
+          <li style="--f:var(--f5)"><a href="#f5" data-floor="5"><b>5</b><span><span class="nm">软件工程与系统设计</span><span class="kw">Git、测试、日志、定时任务、部署</span></span></a></li>
+          <li style="--f:var(--f4)"><a href="#f4" data-floor="4"><b>4</b><span><span class="nm">后端与数据</span><span class="kw">Python、API、JSON、SQL、数据库</span></span></a></li>
+          <li style="--f:var(--f3)"><a href="#f3" data-floor="3"><b>3</b><span><span class="nm">计算机网络</span><span class="kw">客户端、服务器、IP、DNS、HTTP、端口、代理</span></span></a></li>
+          <li style="--f:var(--f2)"><a href="#f2" data-floor="2"><b>2</b><span><span class="nm">操作系统与开发环境</span><span class="kw">Windows、macOS、Linux、Shell、Docker</span></span></a></li>
+          <li style="--f:var(--f1)"><a href="#f1" data-floor="1"><b>1</b><span><span class="nm">计算机基本常识</span><span class="kw">文件、路径、程序、进程、内存、CPU</span></span></a></li>
+        </ol>
+      </div>
+
+      <div class="trip">
+        <p class="ask">你对 Agent 说：<q>帮我修好登录失败的 bug。</q>它接下来的每一步，落在哪一层？</p>
+        <ol class="trip-steps" id="tripSteps"></ol>
+        <div class="controls">
+          <button class="btn" type="button" id="tripNext">下一步</button>
+          <button class="btn line" type="button" id="tripPlay">从头自动走一遍</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ 1 层 ============ -->
+<section class="floor" id="f1" style="--f:var(--f1)">
+  <div class="wrap">
+    <div class="floor-head">
+      <div class="floor-num" aria-hidden="true">1<small>层</small></div>
+      <div>
+        <h2><span class="vh">第 1 层：</span>计算机基本常识</h2>
+        <p class="floor-lede">电脑里最底下的几样东西：数据存在哪，程序怎么跑起来。上面每一层说的事，最后都要落到这里。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <h3>运行一个程序，电脑里发生了什么</h3>
+      <p class="stage-intro">先点“运行 chat.py”，多点几次，再试试断电。</p>
+      <div class="canvas run">
+        <div class="zone">
+          <h4>硬盘<small>断电也在</small></h4>
+          <div class="files">
+            <span class="tile prog" id="runProg"><svg class="ic"><use href="#i-file"/></svg>chat.py</span>
+            <span class="tile"><svg class="ic"><use href="#i-file"/></svg>笔记.md</span>
+            <span class="tile"><svg class="ic"><use href="#i-file"/></svg>照片.jpg</span>
+          </div>
+        </div>
+        <div class="zone">
+          <h4>内存<small>断电就清空</small></h4>
+          <div class="procs" id="runProcs"></div>
+        </div>
+        <div class="zone">
+          <h4>CPU<small>一条一条地执行</small></h4>
+          <div class="cpu-row"><div class="chip" id="runChip"><span>CPU</span></div><p class="cpu-now" id="runNow"></p></div>
+          <ol class="code-lines" id="runCode" aria-label="chat.py 的内容"><li>name = input("你是谁？")</li><li>reply = "你好，" + name</li><li>print(reply)</li></ol>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn" type="button" id="runStart">运行 chat.py</button>
+        <button class="btn line" type="button" id="runKill">关掉一个进程</button>
+        <button class="btn line" type="button" id="runPower">断电再开机</button>
+      </div>
+      <p class="caption" id="runCap" aria-live="polite">现在什么都没运行。chat.py 只是硬盘上的一个文件，和笔记、照片没有区别。</p>
+    </div>
+
+    <div class="stage">
+      <h3>路径是文件的地址</h3>
+      <p class="stage-intro">点左边任意一个带下划线的文件，看它的地址怎样一段一段写出来。再换一种写法试试。</p>
+      <div class="canvas path">
+        <div class="tree" id="pathTree"></div>
+        <div>
+          <div class="seg" id="pathMode" role="group" aria-label="路径的写法">
+            <button type="button" data-m="mac" aria-pressed="true">macOS 和 Linux</button>
+            <button type="button" data-m="win" aria-pressed="false">Windows</button>
+            <button type="button" data-m="rel" aria-pressed="false">相对路径</button>
+          </div>
+          <p class="path-str" id="pathStr" aria-live="polite"><span class="dim">先在左边点一个文件</span></p>
+          <p class="caption" id="pathCap"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="terms">
+      <div class="terms-head"><h3>这一层的词</h3><span class="terms-count"></span></div>
+      <table class="tt">
+        <thead><tr><th><span class="vh">能讲清就勾上</span></th><th>词</th><th>一句话</th><th>学 Agent 时在哪碰到</th></tr></thead>
+        <tbody>
+          <tr><td><input type="checkbox" data-k="1-文件" aria-label="我能讲清：文件"></td><th scope="row">文件</th><td>存在硬盘上的一段数据，有名字。代码、笔记、图片、模型的权重，都是文件。</td><td>Agent 的“读文件”“写文件”工具，操作的就是它。</td></tr>
+          <tr><td><input type="checkbox" data-k="1-路径" aria-label="我能讲清：路径"></td><th scope="row">路径</th><td>文件的地址，从外层文件夹一路写到文件名。</td><td>工具调用的参数里到处是路径。报错 <code>No such file or directory</code>，就是按这个地址没找到东西。</td></tr>
+          <tr><td><input type="checkbox" data-k="1-程序" aria-label="我能讲清：程序"></td><th scope="row">程序</th><td>一份写好的指令，平时作为文件躺在硬盘上。</td><td>你写的 agent.py 就是一个程序。</td></tr>
+          <tr><td><input type="checkbox" data-k="1-进程" aria-label="我能讲清：进程"></td><th scope="row">进程</th><td>正在运行的程序。同一个程序可以同时开出多个进程。</td><td>Agent 每执行一条命令，就启动了一个进程。“杀掉进程”是强行让它停下。</td></tr>
+          <tr><td><input type="checkbox" data-k="1-内存" aria-label="我能讲清：内存"></td><th scope="row">内存</th><td>进程干活时用的临时空间。快，但断电或进程结束就清空。</td><td>本地跑模型时说“至少要 16G 内存”，指的是它。</td></tr>
+          <tr><td><input type="checkbox" data-k="1-硬盘" aria-label="我能讲清：硬盘"></td><th scope="row">硬盘</th><td>长期存放文件的地方。断电不丢，比内存慢。</td><td>Agent 的记忆想留到下一次对话，最终得写成硬盘上的文件，或者存进数据库。</td></tr>
+          <tr><td><input type="checkbox" data-k="1-CPU" aria-label="我能讲清：CPU 和 GPU"></td><th scope="row">CPU 和 GPU</th><td>CPU 是执行指令的芯片，一条一条地算。GPU 是另一种芯片，擅长同时做海量的简单计算。</td><td>大模型主要靠 GPU 算，所以大家都在谈显卡。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 层 ============ -->
+<section class="floor" id="f2" style="--f:var(--f2)">
+  <div class="wrap">
+    <div class="floor-head">
+      <div class="floor-num" aria-hidden="true">2<small>层</small></div>
+      <div>
+        <h2><span class="vh">第 2 层：</span>操作系统与开发环境</h2>
+        <p class="floor-lede">操作系统管着所有硬件和程序。开发环境是你和它打交道的方式，核心是那个打字的黑窗口。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <h3>一个 CPU，怎么同时跑这么多程序</h3>
+      <p class="stage-intro">CPU 同一时刻只做一件事。操作系统让它在几个进程之间轮换。先看慢放，再切到真实速度。</p>
+      <div class="canvas slice" id="slice">
+        <div>
+          <div class="lane" data-name="浏览器"><span class="lane-name">浏览器</span><div class="bar"><i></i></div></div>
+          <div class="lane" data-name="微信"><span class="lane-name">微信</span><div class="bar"><i></i></div></div>
+          <div class="lane" data-name="python agent.py"><span class="lane-name"><code>python agent.py</code></span><div class="bar"><i></i></div></div>
+        </div>
+        <div class="sched"><div class="chip"><span>CPU</span></div><p id="sliceNow" aria-live="off"></p></div>
+      </div>
+      <div class="controls">
+        <div class="seg" id="sliceSpeed" role="group" aria-label="轮换速度">
+          <button type="button" data-s="slow" aria-pressed="true">慢放：每秒换 1 次</button>
+          <button type="button" data-s="mid" aria-pressed="false">快一点：每秒换 3 次</button>
+          <button type="button" data-s="real" aria-pressed="false">真实速度：每秒换上百次</button>
+        </div>
+        <button class="btn" type="button" id="sliceToggle">开始</button>
+      </div>
+      <p class="caption" id="sliceCap" aria-live="polite">点“开始”。亮起来的那一行，是 CPU 此刻正在照顾的进程，只有它的进度条在走。</p>
+    </div>
+
+    <div class="stage">
+      <h3>三种操作系统</h3>
+      <table class="plain">
+        <thead><tr><th></th><th>你在哪见到它</th><th>路径长什么样</th><th>它的命令行</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Windows</th><td>大多数个人电脑和办公电脑</td><td><code>C:\Users\you\a.txt</code></td><td>PowerShell</td></tr>
+          <tr><th scope="row">macOS</th><td>苹果电脑</td><td><code>/Users/you/a.txt</code></td><td>终端，默认用 zsh</td></tr>
+          <tr><th scope="row">Linux</th><td>服务器、云主机、Docker 容器</td><td><code>/home/you/a.txt</code></td><td>终端，常用 bash</td></tr>
+        </tbody>
+      </table>
+      <p class="aside">macOS 和 Linux 是近亲，教程里的命令两边大多通用。Windows 的命令和路径写法都不一样，想照着教程敲，通常先装 WSL，它在 Windows 里开出一个 Linux。服务器几乎都是 Linux，所以 Agent 的教程默认你在用 Linux 或 macOS。</p>
+    </div>
+
+    <div class="stage">
+      <h3>Shell：用打字代替点鼠标</h3>
+      <p class="stage-intro">左边是你熟悉的文件夹窗口，右边是终端。点一条命令，看两边同时发生了什么。</p>
+      <div class="canvas shell">
+        <div class="finder">
+          <h4>文件夹窗口<small>用鼠标</small></h4>
+          <p class="crumb" id="shCrumb"></p>
+          <div class="icons" id="shIcons"></div>
+          <div class="preview" id="shPreview" hidden></div>
+        </div>
+        <div>
+          <div class="tty" id="shTty" role="log" aria-label="终端"></div>
+        </div>
+      </div>
+      <div class="cmds" id="shCmds"></div>
+      <p class="caption" id="shCap" aria-live="polite">终端里那一行 <code>you@mac 项目 %</code> 叫提示符，意思是：我在“项目”这个文件夹里，等你下命令。</p>
+    </div>
+
+    <div class="stage">
+      <h3>Docker：连环境一起打包</h3>
+      <p class="stage-intro">agent.py 要有 Python 3.11 和 requests 库才能跑。你的电脑上有，服务器上没有。两种搬法都试一下。</p>
+      <div class="canvas dock">
+        <div class="zone">
+          <h4>你的电脑</h4>
+          <ul class="env"><li>Python 3.11</li><li>requests 库</li></ul>
+          <div class="slot" id="dkFrom"></div>
+        </div>
+        <div class="road" aria-hidden="true"></div>
+        <div class="zone">
+          <h4>服务器</h4>
+          <ul class="env"><li>Python 3.8</li><li class="miss">没装 requests</li></ul>
+          <div class="slot" id="dkTo"></div>
+          <p class="result" id="dkResult" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="seg" id="dkMode" role="group" aria-label="搬法">
+          <button type="button" data-m="bare" aria-pressed="true">只搬程序</button>
+          <button type="button" data-m="box" aria-pressed="false">装进容器再搬</button>
+        </div>
+        <button class="btn" type="button" id="dkGo">搬到服务器并运行</button>
+      </div>
+      <p class="caption" id="dkCap" aria-live="polite">“在我电脑上明明能跑”是程序员最常说的一句话。问题通常不在程序，在程序周围的环境。</p>
+    </div>
+
+    <div class="terms">
+      <div class="terms-head"><h3>这一层的词</h3><span class="terms-count"></span></div>
+      <table class="tt">
+        <thead><tr><th><span class="vh">能讲清就勾上</span></th><th>词</th><th>一句话</th><th>学 Agent 时在哪碰到</th></tr></thead>
+        <tbody>
+          <tr><td><input type="checkbox" data-k="2-操作系统" aria-label="我能讲清：操作系统"></td><th scope="row">操作系统</th><td>管理硬件、给所有程序分配 CPU、内存和文件的总管。Windows、macOS、Linux 是最常见的三种。</td><td>同一件事在不同系统上命令不同。Agent 干活前要先知道自己在哪种系统上。</td></tr>
+          <tr><td><input type="checkbox" data-k="2-Linux" aria-label="我能讲清：Linux"></td><th scope="row">Linux</th><td>免费、开源的操作系统。绝大多数服务器用它，通常没有图形界面，全靠命令行。</td><td>云服务器和 Docker 容器里几乎都是 Linux。</td></tr>
+          <tr><td><input type="checkbox" data-k="2-Shell" aria-label="我能讲清：终端和 Shell"></td><th scope="row">终端和 Shell</th><td>终端是那个打字的窗口。Shell 是窗口里负责读懂命令的程序，常见的有 bash 和 zsh。</td><td>“执行 shell 命令”是编程 Agent 最重要的工具。</td></tr>
+          <tr><td><input type="checkbox" data-k="2-环境变量" aria-label="我能讲清：环境变量"></td><th scope="row">环境变量</th><td>操作系统替程序保管的一组“名字 = 值”的便签，程序启动时可以读。</td><td>API 密钥通常放在这里，比如 <code>ANTHROPIC_API_KEY</code>。它不该写进代码。</td></tr>
+          <tr><td><input type="checkbox" data-k="2-包管理器" aria-label="我能讲清：包管理器"></td><th scope="row">包管理器</th><td>用一条命令安装别人写好的软件。Python 用 pip，JavaScript 用 npm，macOS 上装工具用 brew。</td><td>报错 <code>ModuleNotFoundError</code>，多半是少装了一个包。</td></tr>
+          <tr><td><input type="checkbox" data-k="2-Docker" aria-label="我能讲清：Docker"></td><th scope="row">Docker</th><td>把程序和它需要的整套环境装进一个“容器”，搬到哪台机器都照样运行。</td><td>Agent 常被放在容器里干活。这个隔离出来的空间也叫沙箱，弄坏了不影响你的电脑。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 层 ============ -->
+<section class="floor" id="f3" style="--f:var(--f3)">
+  <div class="wrap">
+    <div class="floor-head">
+      <div class="floor-num" aria-hidden="true">3<small>层</small></div>
+      <div>
+        <h2><span class="vh">第 3 层：</span>计算机网络</h2>
+        <p class="floor-lede">两台电脑怎么找到对方，怎么说话。Agent 调模型、搜网页、连数据库，走的都是这条路。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <h3>一次访问走过的路</h3>
+      <p class="stage-intro">从你按下回车，到结果显示出来，中间有七步。</p>
+      <div class="canvas scroll-x">
+        <svg id="netSvg" viewBox="0 0 980 440" role="img" aria-labelledby="netTitle">
+          <title id="netTitle">一次网络访问：客户端先问 DNS，再经过三台路由器到达服务器的 443 端口</title>
+          <g class="wire"><path class="dash" d="M95 250 L95 110"/><path d="M150 290 L300 290 L470 230 L640 290 L800 305"/></g>
+
+          <g class="nd" data-node="dns"><rect class="bx" x="20" y="40" width="150" height="70" rx="8"/><text class="t" x="95" y="81" text-anchor="middle">DNS 服务器</text></g>
+          <text class="sub" x="186" y="70">把域名翻成 IP 地址</text><text class="sub" x="186" y="92">的电话簿</text>
+
+          <g class="nd" data-node="client"><rect class="bx" x="40" y="250" width="110" height="80" rx="8"/><use href="#i-laptop" x="73" y="254" width="44" height="44"/><text class="t" x="95" y="320" text-anchor="middle">客户端</text></g>
+          <text class="sub" x="95" y="356" text-anchor="middle">你的电脑</text>
+
+          <g class="nd" data-node="r1"><circle class="bx" cx="300" cy="290" r="28"/><use href="#i-router" x="282" y="272" width="36" height="36"/></g>
+          <text class="sub" x="300" y="342" text-anchor="middle">路由器</text>
+          <g class="nd" data-node="r2"><circle class="bx" cx="470" cy="230" r="28"/><use href="#i-router" x="452" y="212" width="36" height="36"/></g>
+          <text class="sub" x="470" y="282" text-anchor="middle">路由器</text>
+          <g class="nd" data-node="r3"><circle class="bx" cx="640" cy="290" r="28"/><use href="#i-router" x="622" y="272" width="36" height="36"/></g>
+          <text class="sub" x="640" y="342" text-anchor="middle">路由器</text>
+          <text class="sub strong" data-from="4" x="470" y="180" text-anchor="middle">这些中转点就是节点</text>
+
+          <g class="nd" data-node="server"><rect class="bx" x="800" y="190" width="160" height="190" rx="8"/></g>
+          <text class="t" x="880" y="178" text-anchor="middle">服务器</text>
+          <g class="port"><rect x="808" y="204" width="144" height="34" rx="5"/><text class="mono" x="820" y="226">22</text><text class="sub" x="874" y="226">远程登录</text></g>
+          <g class="port"><rect x="808" y="246" width="144" height="34" rx="5"/><text class="mono" x="820" y="268">80</text><text class="sub" x="874" y="268">HTTP</text></g>
+          <g class="port"><rect x="808" y="288" width="144" height="34" rx="5"/><text class="mono" x="820" y="310">443</text><text class="sub" x="874" y="310">HTTPS</text></g>
+          <g class="port"><rect x="808" y="330" width="144" height="34" rx="5"/><text class="mono" x="820" y="352">5432</text><text class="sub" x="874" y="352">数据库</text></g>
+          <g class="port hot" data-from="5"><rect x="808" y="288" width="144" height="34" rx="5"/><text class="mono" x="820" y="310">443</text><text x="874" y="310" font-size="15.5">HTTPS</text></g>
+          <text class="mono ip" data-from="3" x="880" y="410" text-anchor="middle">203.0.113.8</text>
+
+          <g data-from="6"><rect class="notebox" x="528" y="376" width="252" height="40" rx="6"/><text class="mono" x="542" y="401">GET /weather?city=北京</text></g>
+          <g data-from="1" data-to="6"><rect class="notebox" x="20" y="376" width="330" height="40" rx="20"/><text class="mono" x="40" y="401">api.example.com/weather?city=北京</text></g>
+          <g id="netRes" class="hid"><rect class="notebox good" x="20" y="376" width="330" height="40" rx="6"/><text class="mono" x="34" y="401">200 OK {"city":"北京","temp":3}</text></g>
+
+          <g id="netPkt" class="pkt hid"><rect id="netPktBg" y="-46" height="26" rx="6"/><text id="netPktT" y="-28" text-anchor="middle"></text><circle r="11"/></g>
+        </svg>
+      </div>
+      <div class="controls">
+        <button class="btn line" type="button" id="netPrev">上一步</button>
+        <button class="btn" type="button" id="netNext">下一步</button>
+        <button class="btn line" type="button" id="netAuto">从头自动播放</button>
+        <span class="count" id="netCount"></span>
+      </div>
+      <p class="caption" id="netCap" aria-live="polite"></p>
+    </div>
+
+    <div class="stage">
+      <h3>代理和节点</h3>
+      <p class="stage-intro">有时两台电脑之间的直路走不通。代理就是找一台两边都连得上的服务器，在中间转交。</p>
+      <div class="canvas scroll-x">
+        <svg id="pxSvg" viewBox="0 0 980 320" role="img" aria-labelledby="pxTitle" data-mode="direct">
+          <title id="pxTitle">直连和走代理两条路线的对比</title>
+          <g class="wire direct"><path d="M170 220 L810 220"/></g>
+          <g class="wire via"><path d="M170 205 L415 75"/><path d="M565 75 L810 205"/></g>
+          <g class="barrier direct"><path d="M478 198 L502 242 M502 198 L478 242"/><text class="sub" x="490" y="270" text-anchor="middle">这段路不通，或者很慢</text></g>
+          <g class="nd" data-node="client"><rect class="bx" x="40" y="180" width="130" height="80" rx="8"/><use href="#i-laptop" x="83" y="184" width="44" height="44"/><text class="t" x="105" y="250" text-anchor="middle">你的电脑</text></g>
+          <g class="nd via" data-node="node"><rect class="bx" x="415" y="30" width="150" height="70" rx="8"/><text class="t" x="490" y="71" text-anchor="middle">代理服务器</text></g>
+          <text class="sub" x="580" y="42">平时说的“节点”</text><text class="sub" x="580" y="64">就是它</text>
+          <g class="nd" data-node="target"><rect class="bx" x="810" y="180" width="130" height="80" rx="8"/><use href="#i-server" x="853" y="184" width="44" height="44"/><text class="t" x="875" y="250" text-anchor="middle">目标服务</text></g>
+          <text class="sub" x="875" y="286" text-anchor="middle">它看到的来访者</text><text class="t" id="pxSeen" x="875" y="310" text-anchor="middle"></text>
+          <text class="t" id="pxRes" x="105" y="292" text-anchor="middle"></text>
+          <g id="pxPkt" class="pkt hid"><circle r="11"/></g>
+        </svg>
+      </div>
+      <div class="controls">
+        <div class="seg" id="pxMode" role="group" aria-label="连接方式">
+          <button type="button" data-m="direct" aria-pressed="true">直连</button>
+          <button type="button" data-m="proxy" aria-pressed="false">走代理</button>
+        </div>
+        <button class="btn" type="button" id="pxGo">发一个请求</button>
+      </div>
+      <p class="caption" id="pxCap" aria-live="polite"></p>
+      <p class="aside">一个常见的困惑：浏览器能打开的网站，终端里的程序却连不上。原因通常是代理软件默认只接管浏览器，终端里的程序（包括你写的 agent）并不知道有代理。常见的解决办法有两个：给终端设置 <code>HTTPS_PROXY</code> 这个环境变量，或者在代理软件里打开接管全部流量的模式。</p>
+    </div>
+
+    <div class="terms">
+      <div class="terms-head"><h3>这一层的词</h3><span class="terms-count"></span></div>
+      <table class="tt">
+        <thead><tr><th><span class="vh">能讲清就勾上</span></th><th>词</th><th>一句话</th><th>学 Agent 时在哪碰到</th></tr></thead>
+        <tbody>
+          <tr><td><input type="checkbox" data-k="3-客户端" aria-label="我能讲清：客户端和服务器"></td><th scope="row">客户端和服务器</th><td>发起请求的一方是客户端，等着回应的一方是服务器。</td><td>你的 agent 程序调用大模型时，它是客户端，模型厂商那边是服务器。</td></tr>
+          <tr><td><input type="checkbox" data-k="3-IP" aria-label="我能讲清：IP 地址"></td><th scope="row">IP 地址</th><td>每台联网设备的编号，形如 203.0.113.8。</td><td><code>127.0.0.1</code> 永远指本机，它还有个名字叫 localhost。</td></tr>
+          <tr><td><input type="checkbox" data-k="3-DNS" aria-label="我能讲清：DNS"></td><th scope="row">DNS</th><td>把域名翻译成 IP 地址的电话簿。</td><td>报错 <code>Could not resolve host</code>，是 DNS 没查到这个域名。</td></tr>
+          <tr><td><input type="checkbox" data-k="3-端口" aria-label="我能讲清：端口"></td><th scope="row">端口</th><td>一台机器上的门牌号。IP 找到机器，端口找到机器上的那个程序。</td><td><code>localhost:3000</code> 是本机 3000 号门后的程序。“端口被占用”是门后已经有别的程序了。</td></tr>
+          <tr><td><input type="checkbox" data-k="3-HTTP" aria-label="我能讲清：HTTP 和 HTTPS"></td><th scope="row">HTTP 和 HTTPS</th><td>客户端和服务器对话的固定格式：一个请求，换一个响应。HTTPS 是加密的版本。</td><td>状态码要认得几个：200 成功，401 密钥不对，404 地址不存在，429 请求太频繁，500 服务器自己出错。</td></tr>
+          <tr><td><input type="checkbox" data-k="3-节点" aria-label="我能讲清：路由器和节点"></td><th scope="row">路由器和节点</th><td>数据从你到服务器，要经过许多中转设备接力。每一台都是网络上的一个节点。</td><td>网络慢或者断，问题常常出在中间某一跳。</td></tr>
+          <tr><td><input type="checkbox" data-k="3-代理" aria-label="我能讲清：代理"></td><th scope="row">代理</th><td>替你转发请求的中转服务器。日常说的“节点”，多半指它。</td><td>浏览器连得上、终端里连不上，通常是终端里的程序没有走代理。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 层 ============ -->
+<section class="floor" id="f4" style="--f:var(--f4)">
+  <div class="wrap">
+    <div class="floor-head">
+      <div class="floor-num" aria-hidden="true">4<small>层</small></div>
+      <div>
+        <h2><span class="vh">第 4 层：</span>后端与数据</h2>
+        <p class="floor-lede">请求到了服务器之后的事：一段程序接住它，去数据库里取数据，再按约定的格式送回去。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <h3>请求到了服务器之后</h3>
+      <p class="stage-intro">选一个请求，看它怎样变成一句 SQL，从表里取出数据，再变成 JSON 送回去。</p>
+      <div class="controls">
+        <button class="btn" type="button" data-api="city">查北京的用户</button>
+        <button class="btn" type="button" data-api="age">查 30 岁以上的用户</button>
+        <button class="btn" type="button" data-api="add">新增一个用户</button>
+      </div>
+      <div class="canvas api" id="api">
+        <div class="api-flow">
+          <div class="box" data-k="req"><h4>客户端发来的请求</h4><pre id="apiReq"></pre></div>
+          <div class="box" data-k="py"><h4>后端程序<small>Python</small></h4><pre id="apiPy"></pre></div>
+          <div class="box" data-k="sql"><h4>它写给数据库的 SQL</h4><pre id="apiSql"></pre></div>
+        </div>
+        <div class="api-data">
+          <div class="box" data-k="db"><h4>数据库里的 users 表</h4>
+            <table class="dbt" id="apiTable"><thead><tr><th>id</th><th>name</th><th>age</th><th>city</th></tr></thead><tbody></tbody></table>
+          </div>
+          <div class="box" data-k="res"><h4>回给客户端的 JSON</h4><pre id="apiRes"></pre></div>
+        </div>
+      </div>
+      <p class="caption" id="apiCap" aria-live="polite">上面三个按钮是三种请求。前两个是查，第三个是往表里加一行。</p>
+    </div>
+
+    <div class="stage">
+      <h3>读懂一段 JSON</h3>
+      <p class="stage-intro">JSON 只有几条规则，认得下面这七行就够用。</p>
+      <div class="canvas">
+        <div class="anno">
+          <code>{</code><span>花括号包住一个对象，里面是一组“名字: 值”</span>
+          <code>  "name": "王芳",</code><span>名字用双引号。值是文字时，也用双引号</span>
+          <code>  "age": 28,</code><span>数字不加引号</span>
+          <code>  "tags": ["学生", "北京"],</code><span>方括号包住一个列表，里面按顺序排着几个值</span>
+          <code>  "vip": false,</code><span>true 和 false 表示是与否</span>
+          <code>  "address": {"city": "北京"}</code><span>值也可以是另一个对象，一层套一层</span>
+          <code>}</code><span>每一项之间用逗号隔开，最后一项后面不加</span>
+        </div>
+      </div>
+      <p class="aside">调用大模型时，你发出去的和收回来的都是这样的 JSON。工具的定义、工具调用的参数，也是。</p>
+    </div>
+
+    <div class="terms">
+      <div class="terms-head"><h3>这一层的词</h3><span class="terms-count"></span></div>
+      <table class="tt">
+        <thead><tr><th><span class="vh">能讲清就勾上</span></th><th>词</th><th>一句话</th><th>学 Agent 时在哪碰到</th></tr></thead>
+        <tbody>
+          <tr><td><input type="checkbox" data-k="4-前后端" aria-label="我能讲清：前端和后端"></td><th scope="row">前端和后端</th><td>你看得见、点得着的页面是前端。服务器上处理请求、存取数据的程序是后端。</td><td>Agent 本身大多是后端程序。聊天窗口只是它的前端。</td></tr>
+          <tr><td><input type="checkbox" data-k="4-Python" aria-label="我能讲清：Python"></td><th scope="row">Python</th><td>一门写起来接近英语的编程语言，AI 领域用得最多。</td><td>大部分 agent 框架和示例代码用 Python 或 TypeScript 写。</td></tr>
+          <tr><td><input type="checkbox" data-k="4-API" aria-label="我能讲清：API"></td><th scope="row">API</th><td>程序之间互相调用的约定：往哪个地址发，带什么参数，会收到什么。</td><td>调用大模型，就是向它的 API 发一个 HTTP 请求。</td></tr>
+          <tr><td><input type="checkbox" data-k="4-JSON" aria-label="我能讲清：JSON"></td><th scope="row">JSON</th><td>一种用花括号和方括号写数据的文本格式，人和程序都读得懂。</td><td>工具的定义、工具调用的参数、模型 API 的收和发，全是 JSON。</td></tr>
+          <tr><td><input type="checkbox" data-k="4-数据库" aria-label="我能讲清：数据库"></td><th scope="row">数据库</th><td>专门存取大量数据的程序。比自己读写文件更快，也更不容易出错。</td><td>Agent 的长期记忆、任务记录，常常存在数据库里。</td></tr>
+          <tr><td><input type="checkbox" data-k="4-SQL" aria-label="我能讲清：SQL"></td><th scope="row">SQL</th><td>向数据库提问的语言。SELECT 是查，INSERT 是加，UPDATE 是改，DELETE 是删。</td><td>“查数据库”这个工具，通常是让模型写一句 SQL 再执行。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 层 ============ -->
+<section class="floor" id="f5" style="--f:var(--f5)">
+  <div class="wrap">
+    <div class="floor-head">
+      <div class="floor-num" aria-hidden="true">5<small>层</small></div>
+      <div>
+        <h2><span class="vh">第 5 层：</span>软件工程与系统设计</h2>
+        <p class="floor-lede">代码写出来之后，怎么不丢、不坏，出了事能查、能退。Agent 敢放手改代码，靠的是这一层。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <h3>Git：给代码存档</h3>
+      <p class="stage-intro">每个圆点是一个存档。随便点，看图怎么长，下面会显示对应的命令。</p>
+      <div class="canvas scroll-x">
+        <svg id="gitSvg" viewBox="0 0 980 230" role="img" aria-label="Git 提交图"></svg>
+        <p class="cmdline" id="gitCmd" aria-live="polite"></p>
+      </div>
+      <div class="controls">
+        <button class="btn" type="button" id="gitCommit">提交一次</button>
+        <button class="btn line" type="button" id="gitBranch">开一个分支</button>
+        <button class="btn line" type="button" id="gitMerge">合并回主线</button>
+        <button class="btn line" type="button" id="gitUndo">退回上一个存档</button>
+        <button class="btn line" type="button" id="gitReset">重来</button>
+      </div>
+      <p class="caption" id="gitCap" aria-live="polite"></p>
+    </div>
+
+    <div class="stage">
+      <h3>一次改动上线的路</h3>
+      <p class="stage-intro">同一条流水线，三种走法。看测试、日志和回滚各自拦住了什么。</p>
+      <div class="canvas">
+        <ol class="stations" id="shipSt">
+          <li><span class="dot"></span><b>写代码</b><small>你或 Agent 改了几行</small></li>
+          <li><span class="dot"></span><b>Git 提交</b><small>存档，随时能退</small></li>
+          <li><span class="dot"></span><b>自动测试</b><small>检查改得对不对</small></li>
+          <li><span class="dot"></span><b>部署</b><small>放到服务器上</small></li>
+          <li><span class="dot"></span><b>日志与监控</b><small>盯着线上的表现</small></li>
+        </ol>
+        <div class="logbox" id="shipLog" role="log" aria-label="流水线记录"></div>
+      </div>
+      <div class="controls">
+        <button class="btn" type="button" data-ship="good">推一个好改动</button>
+        <button class="btn line" type="button" data-ship="bug">推一个有 bug 的改动</button>
+        <button class="btn line" type="button" data-ship="skip">有 bug，还跳过测试</button>
+      </div>
+      <p class="caption" id="shipCap" aria-live="polite">选一种走法。</p>
+    </div>
+
+    <div class="terms">
+      <div class="terms-head"><h3>这一层的词</h3><span class="terms-count"></span></div>
+      <table class="tt">
+        <thead><tr><th><span class="vh">能讲清就勾上</span></th><th>词</th><th>一句话</th><th>学 Agent 时在哪碰到</th></tr></thead>
+        <tbody>
+          <tr><td><input type="checkbox" data-k="5-Git" aria-label="我能讲清：Git"></td><th scope="row">Git</th><td>给代码存档的工具。每次提交是一个存档点，随时能回到任何一个。</td><td>Agent 把代码改坏了，靠 Git 退回去。GitHub 是存放 Git 仓库的网站。</td></tr>
+          <tr><td><input type="checkbox" data-k="5-分支" aria-label="我能讲清：分支"></td><th scope="row">分支</th><td>从某个存档岔出去的一条平行线。在上面随便试，不影响主线。</td><td>让 Agent 在单独的分支上干活，你看过满意再合并。</td></tr>
+          <tr><td><input type="checkbox" data-k="5-测试" aria-label="我能讲清：测试"></td><th scope="row">测试</th><td>一段自动检查代码对不对的代码。</td><td>Agent 改完代码跑测试，是它判断“我做对了没有”的主要依据。</td></tr>
+          <tr><td><input type="checkbox" data-k="5-日志" aria-label="我能讲清：日志"></td><th scope="row">日志</th><td>程序运行时写下的流水账：几点几分，做了什么，出了什么错。</td><td>排查 agent 为什么出错，第一件事是看日志。</td></tr>
+          <tr><td><input type="checkbox" data-k="5-定时任务" aria-label="我能讲清：定时任务"></td><th scope="row">定时任务</th><td>让程序在固定时间自动运行。常用 cron 表达式写时间，<code>0 9 * * *</code> 是每天 9 点。</td><td>“每天早上让 agent 汇总一遍邮件”，靠的就是它。</td></tr>
+          <tr><td><input type="checkbox" data-k="5-部署" aria-label="我能讲清：部署"></td><th scope="row">部署</th><td>把程序放到服务器上，让别人也能用。</td><td>在自己电脑上能跑的 agent，部署之后才算上线。</td></tr>
+          <tr><td><input type="checkbox" data-k="5-架构" aria-label="我能讲清：系统架构"></td><th scope="row">系统架构</th><td>一个系统由哪几部分组成，彼此怎么通信的总体安排。</td><td>多个 agent 怎么分工、谁调用谁，讨论的就是架构。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6 层 ============ -->
+<section class="floor" id="f6" style="--f:var(--f6)">
+  <div class="wrap">
+    <div class="floor-head">
+      <div class="floor-num" aria-hidden="true">6<small>层</small></div>
+      <div>
+        <h2><span class="vh">第 6 层：</span>Agent 与 Harness</h2>
+        <p class="floor-lede">你已经在学的这一层。把它放回楼顶再看一遍：模型只负责说要做什么，下面五层负责真的做到。</p>
+      </div>
+    </div>
+
+    <div class="stage">
+      <h3>Agent 循环</h3>
+      <p class="stage-intro">一步一步走，看模型和 harness 各做了什么，每一步又落到了楼下哪一层。</p>
+      <div class="canvas loop">
+        <svg id="loopSvg" viewBox="0 0 440 400" role="img" aria-labelledby="loopTitle">
+          <title id="loopTitle">Agent 循环：模型思考，发出工具调用，Harness 执行，结果送回模型</title>
+          <defs><marker id="arr" viewBox="0 0 10 10" refX="6" refY="5" markerUnits="userSpaceOnUse" markerWidth="16" markerHeight="16" orient="auto"><path class="arrh" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+          <path class="arc" data-arc="call" d="M290 50 Q360 50 360 162" marker-end="url(#arr)"/>
+          <path class="arc" data-arc="harness" d="M360 230 Q360 350 298 350" marker-end="url(#arr)"/>
+          <path class="arc" data-arc="result" d="M150 350 Q80 350 80 238" marker-end="url(#arr)"/>
+          <path class="arc" data-arc="model" d="M80 170 Q80 50 142 50" marker-end="url(#arr)"/>
+          <g class="nd" data-node="model"><rect class="bx" x="150" y="20" width="140" height="60" rx="8"/><text class="t" x="220" y="56" text-anchor="middle">模型思考</text></g>
+          <g class="nd" data-node="call"><rect class="bx" x="290" y="170" width="140" height="60" rx="8"/><text class="t" x="360" y="206" text-anchor="middle">发出工具调用</text></g>
+          <g class="nd" data-node="harness"><rect class="bx" x="150" y="320" width="140" height="60" rx="8"/><text class="t" x="220" y="356" text-anchor="middle">Harness 执行</text></g>
+          <g class="nd" data-node="result"><rect class="bx" x="10" y="170" width="140" height="60" rx="8"/><text class="t" x="80" y="206" text-anchor="middle">结果送回模型</text></g>
+          <text class="lap" id="loopLap" x="220" y="212" text-anchor="middle">第 1 圈</text>
+        </svg>
+        <ol class="talk" id="loopTalk" aria-live="polite"></ol>
+      </div>
+      <div class="controls">
+        <button class="btn" type="button" id="loopStep">走一步</button>
+        <button class="btn line" type="button" id="loopAuto">自动走完</button>
+        <button class="btn line" type="button" id="loopReset">重来</button>
+      </div>
+      <p class="caption" id="loopCap" aria-live="polite"></p>
+    </div>
+
+    <div class="terms">
+      <div class="terms-head"><h3>这一层的词</h3><span class="terms-count"></span></div>
+      <table class="tt">
+        <thead><tr><th><span class="vh">能讲清就勾上</span></th><th>词</th><th>一句话</th><th>学 Agent 时在哪碰到</th></tr></thead>
+        <tbody>
+          <tr><td><input type="checkbox" data-k="6-工具调用" aria-label="我能讲清：工具调用"></td><th scope="row">工具调用</th><td>模型不能自己动手。它只输出一段 JSON，说想用哪个工具、参数是什么，由外面的程序执行。</td><td>你给 agent 接的每一个能力，都是一个工具。</td></tr>
+          <tr><td><input type="checkbox" data-k="6-Harness" aria-label="我能讲清：Harness"></td><th scope="row">Harness</th><td>包在模型外面的那层程序：把工具交给模型，执行它的调用，把结果送回去，管权限和上下文。</td><td>Claude Code 这类产品，本体就是一个 harness。</td></tr>
+          <tr><td><input type="checkbox" data-k="6-工作流" aria-label="我能讲清：工作流和 Agent"></td><th scope="row">工作流和 Agent</th><td>步骤由人事先写死的是工作流。下一步做什么由模型自己决定的是 agent。</td><td>能写成固定步骤的事，用工作流更稳。步骤说不准的事才需要 agent。</td></tr>
+          <tr><td><input type="checkbox" data-k="6-Eval" aria-label="我能讲清：Eval"></td><th scope="row">Eval</th><td>给 agent 准备的一套考题和评分办法。</td><td>改了提示词或换了模型，靠它回答“变好了还是变坏了”。</td></tr>
+          <tr><td><input type="checkbox" data-k="6-监控" aria-label="我能讲清：监控与回滚"></td><th scope="row">监控与回滚</th><td>上线之后持续看日志和指标，出了问题就退回上一个好的版本。</td><td>和 5 层是同一件事，只是对象从代码扩大到了提示词、工具和模型版本。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 学法 ============ -->
+<section class="learn" id="learn">
+  <div class="wrap">
+    <h2>这六层该怎么补</h2>
+    <p class="floor-lede">目标定低一点：听到一个词，知道它在哪一层、解决什么问题。到这个程度就能跟上 Agent 的教程，剩下的在用的时候再补。</p>
+
+    <ol class="plan">
+      <li>
+        <h3>先认路，不求会</h3>
+        <p>用一周左右，每天半小时。把这一页的动画点完，把每层的词勾一遍。再看《计算机科学速成课》里的十集：第 7、8 集讲 CPU 和程序，第 18、19、20 集讲操作系统、内存和文件系统，第 22 集讲命令行，第 28、29、30 集讲网络，第 16 集讲软件工程。每集十分钟出头，全程动画。</p>
+      </li>
+      <li>
+        <h3>在自己的电脑上做五件小事</h3>
+        <p>每件不超过二十分钟。做过一次，这些词就从名词变成了你手上的东西。</p>
+        <ul class="todo">
+          <li>打开“终端”，依次敲 <code>pwd</code>、<code>ls</code>、<code>cd</code>、<code>mkdir</code>、<code>cat</code>，每条都看一眼结果。</li>
+          <li>新建 hello.py，里面写一行 <code>print("你好")</code>，用 <code>python3 hello.py</code> 运行它。</li>
+          <li>敲 <code>nslookup baidu.com</code>，再敲 <code>curl -I https://www.baidu.com</code>。前一条让你看到域名变成 IP，后一条让你看到 HTTP 状态码。</li>
+          <li>找一个文件夹执行 <code>git init</code>，提交一次，改一行再提交一次，用 <code>git log</code> 看两个存档。</li>
+          <li>让 Claude Code 或你在用的编程 Agent 做一个小任务，盯着它每一步调了什么工具，对着这栋楼找它落在哪层。</li>
+        </ul>
+      </li>
+      <li>
+        <h3>之后遇到再查</h3>
+        <p>学 Agent 时每碰到一个不懂的词，先问它在哪一层，再记进知识库。每个词写三行就够：它是什么，像什么，在 Agent 里哪里碰到。想成体系地补，再看下面这张表。</p>
+      </li>
+    </ol>
+
+    <h3 class="sub-h">可以看的东西</h3>
+    <table class="plain">
+      <thead><tr><th>想补哪里</th><th>看什么</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">整栋楼的直觉</th><td><a href="https://www.bilibili.com/video/BV1EW411u7th" target="_blank" rel="noopener">《计算机科学速成课》</a>，B 站，40 集，中文字幕</td><td>先看上面点名的十集，其余的不急。</td></tr>
+        <tr><th scope="row">1 层</th><td>《计算机是怎样跑起来的》《程序是怎样跑起来的》，矢泽久雄</td><td>写给非专业读者的书，图多，不用按顺序读完。</td></tr>
+        <tr><th scope="row">2 层和 5 层</th><td><a href="https://missing-semester-cn.github.io/" target="_blank" rel="noopener">《计算机教育中缺失的一课》</a>，MIT 公开课的中文版</td><td>Shell、命令行环境、Git 各有一讲。2026 版新增了一讲“智能体编程”。</td></tr>
+        <tr><th scope="row">3 层</th><td>《网络是怎样连接的》，户根勤。《图解 HTTP》，上野宣</td><td>前一本从输入网址一路讲到服务器响应，和上面那段七步动画是同一条路。</td></tr>
+        <tr><th scope="row">4 层</th><td><a href="https://liaoxuefeng.com/books/python/index.html" target="_blank" rel="noopener">廖雪峰的 Python 教程</a></td><td>学到函数和模块，能读懂别人的脚本，就够用了。</td></tr>
+        <tr><th scope="row">5 层</th><td><a href="https://liaoxuefeng.com/books/git/introduction/index.html" target="_blank" rel="noopener">廖雪峰的 Git 教程</a>，<a href="https://learngitbranching.js.org/?locale=zh_CN" target="_blank" rel="noopener">Learn Git Branching</a></td><td>后一个是在网页里边点边学分支，和这一页的存档图是同一种玩法。</td></tr>
+      </tbody>
+    </table>
+
+    <div class="known">
+      <span>全楼的词，你已经能讲清</span><strong id="knownSum">0 / 0</strong>
+      <button class="btn line" type="button" id="knownReset">清空所有勾选</button>
+    </div>
+
+    <p class="foot">这是按学 Agent 的需要组织的实用地图，不是计算机专业课程的标准划分。动画里的域名和 IP（example.com、203.0.113.8）是专门留给文档举例用的，不指向真实的服务。勾选记录只保存在这台电脑的浏览器里。</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait = ms => new Promise(r => setTimeout(r, reduce ? Math.min(ms, 80) : ms));
+const safe = (name, fn) => { try { fn(); } catch (e) { console.error('[' + name + ']', e); } };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const press = (btns, on) => btns.forEach(b => b.setAttribute('aria-pressed', String(b === on)));
+
+/* 把一个元素的分身从原地飞到目标位置 */
+function fly(el, target, ms = 750) {
+  const a = el.getBoundingClientRect(), b = target.getBoundingClientRect();
+  const g = el.cloneNode(true);
+  g.removeAttribute('id');
+  Object.assign(g.style, {position: 'fixed', left: a.left + 'px', top: a.top + 'px', width: a.width + 'px', height: a.height + 'px', margin: '0', zIndex: '60', pointerEvents: 'none'});
+  document.body.appendChild(g);
+  const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2);
+  const dur = reduce ? 1 : ms;
+  let done = Promise.resolve();
+  try {
+    const anim = g.animate([{transform: 'translate(0,0)'}, {transform: `translate(${dx}px,${dy}px)`}], {duration: dur, easing: 'cubic-bezier(.5,0,.2,1)', fill: 'forwards'});
+    done = anim.finished.catch(() => {});
+  } catch (e) {}
+  return Promise.race([done, new Promise(r => setTimeout(r, dur + 300))]).then(() => g.remove());
+}
+
+/* SVG 里的小圆点沿直线移动 */
+function mover(setPos) {
+  return (from, to, ms, alive) => new Promise(res => {
+    let fin = false;
+    const end = () => { if (fin) return; fin = true; if (alive()) setPos(to[0], to[1]); res(); };
+    if (reduce) return end();
+    const t0 = performance.now();
+    const f = t => {
+      if (fin) return;
+      if (!alive()) return end();
+      const k = Math.min(1, Math.max(0, (t - t0) / ms));
+      const e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      setPos(from[0] + (to[0] - from[0]) * e, from[1] + (to[1] - from[1]) * e);
+      if (k < 1) requestAnimationFrame(f); else end();
+    };
+    requestAnimationFrame(f);
+    setTimeout(end, ms + 300);
+  });
+}
+
+/* ---------- 电梯面板：当前楼层 ---------- */
+safe('lift', () => {
+  const links = $$('.lift [data-target]');
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    links.forEach(a => a.dataset.target === e.target.id ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current'));
+  }), {rootMargin: '-45% 0px -50% 0px'});
+  links.forEach(a => { const t = document.getElementById(a.dataset.target); if (t) io.observe(t); });
+});
+
+/* ---------- 词表：勾选和进度 ---------- */
+safe('terms', () => {
+  const KEY = 'six-floors-known';
+  let known = {};
+  try { known = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
+  const boxes = $$('input[data-k]');
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(known)); } catch (e) {} };
+  const update = () => {
+    let total = 0, done = 0;
+    for (let f = 1; f <= 6; f++) {
+      const bs = boxes.filter(b => b.dataset.k.startsWith(f + '-')), d = bs.filter(b => b.checked).length;
+      total += bs.length; done += d;
+      const link = $(`.lift [data-target="f${f}"]`);
+      if (link) link.style.setProperty('--p', bs.length ? Math.round(d / bs.length * 100) : 0);
+      const c = $(`#f${f} .terms-count`);
+      if (c) c.textContent = `能讲清的勾上，已勾 ${d} / ${bs.length}`;
+    }
+    const s = $('#knownSum'); if (s) s.textContent = `${done} / ${total}`;
+  };
+  boxes.forEach(b => {
+    b.checked = !!known[b.dataset.k];
+    b.addEventListener('change', () => { known[b.dataset.k] = b.checked; save(); update(); });
+  });
+  const reset = $('#knownReset');
+  if (reset) reset.addEventListener('click', () => { known = {}; boxes.forEach(b => b.checked = false); save(); update(); });
+  update();
+});
+
+/* ---------- 楼顶：一句话的落点 ---------- */
+safe('trip', () => {
+  const steps = [
+    {f: 6, act: '想：先看看代码是怎么写的', note: '模型自己不动手，只决定要调用哪个工具。'},
+    {f: 1, code: 'read_file("app/login.py")', note: '读一个文件。得先知道它的路径。'},
+    {f: 2, code: 'bash("python3 app/login.py")', note: '在终端里敲命令，启动一个进程。'},
+    {f: 3, code: 'fetch("https://api.example.com/login")', note: '发一个 HTTP 请求。域名、IP、端口都在这层。'},
+    {f: 4, code: 'sql("SELECT * FROM users WHERE name = \'王芳\'")', note: '接口回的是 JSON，用户数据在数据库里。'},
+    {f: 5, code: 'bash("pytest && git commit -m \'修复登录\'")', note: '跑测试确认修好了，再用 Git 存档。'},
+    {f: 6, act: '答：修好了，一共改了 2 行', note: '循环结束。整个过程由 harness 驱动和记录。'},
+  ];
+  const tower = $('#tower'), list = $('#tripSteps'), next = $('#tripNext'), playB = $('#tripPlay');
+  const slabs = $$('.slabs a');
+  list.innerHTML = steps.map((s, i) => `<li><button type="button" data-i="${i}" style="--f:var(--f${s.f})"><span class="tag"><i>${s.f}</i></span><span class="act">${s.code ? '<code>' + esc(s.code) + '</code>' : esc(s.act)}</span><span class="note">${esc(s.note)}</span></button></li>`).join('');
+  const btns = $$('button', list);
+  let cur = 0, token = 0;
+  const show = i => {
+    cur = i;
+    const s = steps[i];
+    btns.forEach((b, j) => { b.classList.toggle('on', j === i); j === i ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current'); });
+    slabs.forEach(a => a.classList.toggle('on', +a.dataset.floor === s.f));
+    tower.style.setProperty('--at', 6 - s.f);
+    next.textContent = i === steps.length - 1 ? '回到第一步' : '下一步';
+  };
+  const play = async () => {
+    const my = ++token;
+    for (let i = 0; i < steps.length; i++) { if (my !== token) return; show(i); await wait(1900); }
+  };
+  btns.forEach(b => b.addEventListener('click', () => { token++; show(+b.dataset.i); }));
+  next.addEventListener('click', () => { token++; show((cur + 1) % steps.length); });
+  playB.addEventListener('click', play);
+  show(0);
+  if (!reduce) setTimeout(play, 1000);
+});
+
+/* ---------- 1 层：程序变进程 ---------- */
+safe('run', () => {
+  const procsEl = $('#runProcs'); if (!procsEl) return;
+  const cap = $('#runCap'), now = $('#runNow'), chip = $('#runChip'), lines = $$('#runCode li');
+  const startB = $('#runStart'), killB = $('#runKill'), powerB = $('#runPower');
+  let procs = [], pid = 4020, turn = -1, timer = null, busy = false;
+  const build = fresh => {
+    procsEl.innerHTML = procs.length
+      ? procs.map(p => `<div class="proc${p.pid === fresh ? ' fresh' : ''}" data-pid="${p.pid}"><b>进程 ${p.pid}</b><span></span></div>`).join('')
+      : '<p class="empty">空的，没有程序在运行</p>';
+    paint();
+  };
+  const paint = () => {
+    const active = procs[turn];
+    procs.forEach(p => {
+      const el = $(`.proc[data-pid="${p.pid}"]`, procsEl); if (!el) return;
+      el.classList.toggle('on', p === active);
+      $('span', el).textContent = `chat.py，运行到第 ${p.line} 行`;
+    });
+    lines.forEach((li, i) => li.classList.toggle('on', !!active && active.line === i + 1));
+    chip.classList.toggle('busy', !!active);
+    now.textContent = active ? `正在执行进程 ${active.pid} 的第 ${active.line} 行` : '闲着，没有进程要它执行';
+    startB.disabled = busy || procs.length >= 3;
+    killB.disabled = !procs.length;
+  };
+  const tick = () => {
+    if (!procs.length) { turn = -1; clearInterval(timer); timer = null; paint(); return; }
+    turn = (turn + 1) % procs.length;
+    procs[turn].line = procs[turn].line % 3 + 1;
+    paint();
+  };
+  startB.addEventListener('click', async () => {
+    if (busy || procs.length >= 3) return;
+    busy = true; paint();
+    await fly($('#runProg'), procsEl, 700);
+    const p = {pid: ++pid, line: 1};
+    procs.push(p); busy = false; turn = procs.length - 1;
+    build(p.pid);
+    if (!timer) timer = setInterval(tick, 1200);
+    cap.textContent = procs.length === 1
+      ? 'chat.py 的一份副本被读进内存，成了一个进程，有了自己的编号。CPU 开始一行一行执行它。硬盘上的原件一动没动。'
+      : procs.length === 2
+        ? '同一个程序又运行了一次，于是有了两个进程，各有各的编号和进度。CPU 在它们之间轮流执行。'
+        : '三个进程了。你的电脑上此刻其实有几百个进程在这样轮流。';
+  });
+  killB.addEventListener('click', () => {
+    if (!procs.length) return;
+    procs.pop(); turn = procs.length ? 0 : -1; build();
+    cap.textContent = '一个进程被关掉，它占的内存还了回去。硬盘上的 chat.py 没有任何变化，随时可以再运行。';
+  });
+  powerB.addEventListener('click', () => {
+    procs = []; turn = -1; build();
+    cap.textContent = '断电：内存里的进程全没了，硬盘上的三个文件一个不少。没保存的东西会丢，就是因为它当时只在内存里。';
+  });
+  build();
+});
+
+/* ---------- 1 层：路径 ---------- */
+safe('path', () => {
+  const tree = $('#pathTree'); if (!tree) return;
+  const out = $('#pathStr'), cap = $('#pathCap'), modes = $$('#pathMode button');
+  const N = [
+    {id: 'root', d: 0, dir: 1, p: null},
+    {id: 'Users', d: 1, dir: 1, p: 'root'},
+    {id: 'you', d: 2, dir: 1, p: 'Users'},
+    {id: 'Documents', d: 3, dir: 1, p: 'you'},
+    {id: '笔记.md', d: 4, p: 'Documents'},
+    {id: '项目', d: 3, dir: 1, p: 'you'},
+    {id: 'agent', d: 4, dir: 1, p: '项目'},
+    {id: 'main.py', d: 5, p: 'agent'},
+    {id: 'data', d: 5, dir: 1, p: 'agent'},
+    {id: 'users.json', d: 6, p: 'data'},
+  ];
+  const by = Object.fromEntries(N.map(n => [n.id, n]));
+  const chain = id => { const c = []; for (let n = by[id]; n; n = by[n.p]) c.unshift(n.id); return c; };
+  const CWD = '项目';
+  const captions = {
+    mac: '绝对路径：从最外层的 / 开始，一路写到文件。谁来读、站在哪读，指的都是同一个文件。macOS 和 Linux 用正斜杠 / 分隔。',
+    win: 'Windows 从盘符 C: 写起，用反斜杠 \\ 分隔。同一个文件，写法不同。照着 macOS 的教程在 Windows 上敲路径，第一步就会错在这里。',
+    rel: '相对路径：从你此刻所在的文件夹算起，这里是“项目”。两个点 .. 表示上一层。Agent 报“找不到文件”，常常是因为它以为自己站在另一个文件夹里。',
+  };
+  let mode = 'mac', picked = null, token = 0;
+  const hint = '<span class="dim">先在左边点一个文件</span>';
+  const build = () => {
+    tree.innerHTML = N.map(n => {
+      const label = n.id === 'root' ? esc(mode === 'win' ? 'C:\\' : '/') + ' <span class="empty">最外层</span>' : esc(n.id);
+      const icon = `<svg class="ic"><use href="#${n.dir ? 'i-folder' : 'i-file'}"/></svg>`;
+      const here = mode === 'rel' && n.id === CWD ? '<span class="here">你在这里</span>' : '';
+      return n.dir
+        ? `<div class="node" data-id="${n.id}" style="--d:${n.d}">${icon}<span>${label}</span>${here}</div>`
+        : `<button type="button" class="node" data-id="${n.id}" style="--d:${n.d}">${icon}<span>${label}</span></button>`;
+    }).join('');
+  };
+  const plan = id => {
+    const c = chain(id);
+    if (mode === 'rel') {
+      const base = chain(CWD);
+      let k = 0;
+      while (k < base.length && k < c.length && base[k] === c[k]) k++;
+      const steps = [];
+      for (let i = base.length - 1; i >= k; i--) steps.push({node: base[i - 1], tok: '..'});
+      c.slice(k).forEach(x => steps.push({node: x, tok: x}));
+      return steps.map((s, i) => ({node: s.node, text: (i ? '/' : '') + s.tok}));
+    }
+    const sep = mode === 'win' ? '\\' : '/';
+    return c.map((x, i) => ({node: x, text: i === 0 ? (mode === 'win' ? 'C:\\' : '/') : (i === 1 ? '' : sep) + x}));
+  };
+  const light = id => { const el = $$('.node', tree).find(n => n.dataset.id === id); if (el) el.classList.add('lit'); };
+  const walk = async id => {
+    picked = id;
+    const my = ++token, steps = plan(id);
+    $$('.node', tree).forEach(n => n.classList.remove('lit'));
+    out.innerHTML = '';
+    if (mode === 'rel') { light(CWD); await wait(380); if (my !== token) return; }
+    for (const s of steps) {
+      light(s.node);
+      const sp = document.createElement('span'); sp.textContent = s.text; out.appendChild(sp);
+      await wait(300); if (my !== token) return;
+    }
+  };
+  const setMode = m => {
+    mode = m; token++;
+    press(modes, modes.find(b => b.dataset.m === m));
+    cap.textContent = captions[m];
+    build();
+    if (picked) walk(picked); else out.innerHTML = hint;
+  };
+  tree.addEventListener('click', e => { const b = e.target.closest('button.node'); if (b) walk(b.dataset.id); });
+  modes.forEach(b => b.addEventListener('click', () => setMode(b.dataset.m)));
+  setMode('mac');
+});
+
+/* ---------- 2 层：CPU 轮换 ---------- */
+safe('slice', () => {
+  const root = $('#slice'); if (!root) return;
+  const lanes = $$('.lane', root).map(el => ({el, bar: $('i', el), p: 0, name: el.dataset.name}));
+  const now = $('#sliceNow'), toggle = $('#sliceToggle'), segs = $$('#sliceSpeed button'), cap = $('#sliceCap');
+  const period = {slow: 1000, mid: 333};
+  const captions = {
+    slow: '慢放时看得很清楚：三个进程排着队，轮到谁，谁走一小段，其余的原地等着。',
+    mid: '换得快了一些。每个进程仍然是走走停停，只是停的时间短了。',
+    real: '真实的轮换快到眼睛分辨不出，于是三个程序看起来在同时运行。你电脑上的几百个进程，就是这样共用几个 CPU 核心的。',
+  };
+  let mode = 'slow', running = false, last = 0, acc = 0, turn = 0, raf = 0;
+  const paint = () => {
+    root.classList.toggle('real', mode === 'real' && running);
+    lanes.forEach((l, i) => { l.el.classList.toggle('on', running && mode !== 'real' && i === turn); l.bar.style.width = l.p + '%'; });
+    now.textContent = !running ? 'CPU 停着' : mode === 'real' ? '换得太快，看起来三个都在跑' : '现在轮到：' + lanes[turn].name;
+  };
+  const frame = t => {
+    if (!running) return;
+    const dt = Math.min(250, Math.max(0, t - last)); last = t;
+    const rate = 100 / 4500;
+    if (mode === 'real') lanes.forEach(l => { l.p = (l.p + dt * rate / 3) % 100; });
+    else {
+      acc += dt;
+      if (acc >= period[mode]) { acc = 0; turn = (turn + 1) % lanes.length; }
+      lanes[turn].p = (lanes[turn].p + dt * rate) % 100;
+    }
+    paint();
+    raf = requestAnimationFrame(frame);
+  };
+  const start = () => { if (running) return; running = true; last = performance.now(); toggle.textContent = '暂停'; cap.textContent = captions[mode]; paint(); raf = requestAnimationFrame(frame); };
+  const stop = () => { running = false; cancelAnimationFrame(raf); toggle.textContent = '开始'; paint(); };
+  toggle.addEventListener('click', () => running ? stop() : start());
+  segs.forEach(b => b.addEventListener('click', () => { mode = b.dataset.s; acc = 0; press(segs, b); cap.textContent = captions[mode]; if (running) paint(); else start(); }));
+  new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting && running) stop(); })).observe(root);
+  paint();
+});
+
+/* ---------- 2 层：Shell 对照文件夹窗口 ---------- */
+safe('shell', () => {
+  const tty = $('#shTty'); if (!tty) return;
+  const crumb = $('#shCrumb'), icons = $('#shIcons'), preview = $('#shPreview'), cmds = $('#shCmds'), cap = $('#shCap');
+  const fs = {dir: {
+    '项目': {dir: {
+      'agent': {dir: {'main.py': {text: 'print("你好，我是 agent")', out: '你好，我是 agent'}, 'notes.txt': {text: '明天记得跑测试'}}},
+      'README.md': {text: '# 我的第一个 agent 项目'},
+    }},
+    'Documents': {dir: {'笔记.md': {text: '路径就是文件的地址'}}},
+  }};
+  let cwd = ['项目'], busy = false, cur = null;
+  const here = () => cwd.reduce((n, k) => n.dir[k], fs);
+  const full = () => '/Users/you' + cwd.map(k => '/' + k).join('');
+  const line = html => { const d = document.createElement('div'); d.innerHTML = html; tty.appendChild(d); tty.scrollTop = tty.scrollHeight; return d; };
+  const newPrompt = () => { cur = line(`<span class="p">you@mac ${esc(cwd.length ? cwd[cwd.length - 1] : '~')} % </span><span class="typed"></span><span class="cur"></span>`); };
+  const pulse = el => { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); };
+  const drawGui = fresh => {
+    crumb.textContent = '位置：' + ['you', ...cwd].join(' / ');
+    const n = here(), keys = Object.keys(n.dir);
+    icons.innerHTML = keys.length
+      ? keys.map(k => `<span class="tile${k === fresh ? ' pop' : ''}"><svg class="ic"><use href="#${n.dir[k].dir ? 'i-folder' : 'i-file'}"/></svg>${esc(k)}</span>`).join('')
+      : '<span class="empty">这个文件夹是空的</span>';
+  };
+  const drawCmds = () => {
+    const n = here(), list = [['pwd', '我在哪'], ['ls', '这里有什么']];
+    Object.keys(n.dir).forEach(k => {
+      const c = n.dir[k];
+      if (c.dir) list.push(['cd ' + k, '进入 ' + k]);
+      else if (/\.py$/.test(k)) list.push(['python3 ' + k, '运行这个程序']);
+      else list.push(['cat ' + k, '看文件内容']);
+    });
+    if (!n.dir.logs) list.push(['mkdir logs', '新建文件夹 logs']);
+    else list.push(['mkdir logs', '再建一次试试']);
+    if (cwd.length) list.push(['cd ..', '回上一层']);
+    cmds.innerHTML = list.map(([c, d]) => `<button class="btn line" type="button" data-c="${esc(c)}"><code>${esc(c)}</code><small>${esc(d)}</small></button>`).join('');
+  };
+  const run = async c => {
+    if (busy) return;
+    busy = true;
+    $$('button', cmds).forEach(b => b.disabled = true);
+    const typed = $('.typed', cur);
+    for (const ch of c) { typed.textContent += ch; await wait(36); }
+    await wait(160);
+    const caret = $('.cur', cur); if (caret) caret.remove();
+    const sp = c.indexOf(' '), cmd = sp < 0 ? c : c.slice(0, sp), arg = sp < 0 ? '' : c.slice(sp + 1), n = here();
+    let out = '', err = false, fresh = null, say = '';
+    preview.hidden = true;
+    if (cmd === 'pwd') {
+      out = full();
+      say = 'pwd 问的是：我现在在哪个文件夹。回答是一条绝对路径。在图形界面里，这就是窗口顶上的位置栏。';
+    } else if (cmd === 'ls') {
+      out = Object.keys(n.dir).sort().join('    ');
+      say = out ? 'ls 列出这里有什么。等于你用眼睛扫一遍窗口里的图标。' : '这个文件夹是空的，所以 ls 什么也没打印。';
+    } else if (cmd === 'cd') {
+      if (arg === '..') { cwd.pop(); say = 'cd .. 回到上一层。注意提示符里的文件夹名跟着变了。'; }
+      else { cwd.push(arg); say = `cd 是走进一个文件夹，等于双击“${arg}”。它没有任何输出，只有提示符变了。`; }
+    } else if (cmd === 'cat') {
+      out = n.dir[arg].text;
+      preview.innerHTML = `<b>${esc(arg)} 的内容</b>${esc(out)}`; preview.hidden = false;
+      say = 'cat 把文件内容打印在终端里，等于双击打开看一眼。';
+    } else if (cmd === 'python3') {
+      out = n.dir[arg].out;
+      preview.innerHTML = `<b>运行 ${esc(arg)} 的结果</b>${esc(out)}`; preview.hidden = false;
+      say = '硬盘上的 main.py 被读进内存，成了一个进程，它的输出打印在终端里。这就是 1 层讲的“程序变进程”。';
+    } else if (cmd === 'mkdir') {
+      if (n.dir[arg]) { out = `mkdir: ${arg}: File exists`; err = true; say = '同名的文件夹已经存在，所以报错。命令行的报错大多是这个格式：哪条命令，对着什么，出了什么问题。'; }
+      else { n.dir[arg] = {dir: {}}; fresh = arg; say = 'mkdir 新建了一个文件夹，左边窗口里多了一个图标。它没有任何输出：在命令行里，不说话通常就是成功。'; }
+    }
+    if (out) line(`<span${err ? ' class="err"' : ''}>${esc(out)}</span>`);
+    drawGui(fresh); drawCmds();
+    if (cmd === 'pwd' || cmd === 'cd') pulse(crumb);
+    if (cmd === 'ls') pulse(icons);
+    cap.textContent = say;
+    newPrompt();
+    busy = false;
+  };
+  cmds.addEventListener('click', e => { const b = e.target.closest('button[data-c]'); if (b && !b.disabled) run(b.dataset.c); });
+  drawGui(); drawCmds(); newPrompt();
+});
+
+/* ---------- 2 层：Docker ---------- */
+safe('docker', () => {
+  const from = $('#dkFrom'); if (!from) return;
+  const to = $('#dkTo'), result = $('#dkResult'), cap = $('#dkCap'), go = $('#dkGo'), segs = $$('#dkMode button');
+  const file = '<span class="tile"><svg class="ic"><use href="#i-file"/></svg>agent.py</span>';
+  const cargo = {
+    bare: `<div class="cargo">${file}</div>`,
+    box: `<div class="cargo crate"><b>容器</b>${file}<span class="tile sub">Python 3.11</span><span class="tile sub">requests 库</span></div>`,
+  };
+  let mode = 'bare', busy = false;
+  const reset = () => {
+    from.innerHTML = cargo[mode];
+    to.innerHTML = '<span class="empty">等程序搬过来</span>';
+    result.textContent = ''; result.className = 'result';
+  };
+  segs.forEach(b => b.addEventListener('click', () => {
+    if (busy) return;
+    mode = b.dataset.m; press(segs, b); reset();
+    cap.textContent = mode === 'bare'
+      ? '只搬 agent.py 这一个文件过去。它需要的 Python 3.11 和 requests 库留在了你的电脑上。'
+      : '先把 agent.py 和它需要的 Python 3.11、requests 库一起装进一个容器，再把整个容器搬过去。';
+  }));
+  go.addEventListener('click', async () => {
+    if (busy) return;
+    busy = true; go.disabled = true; reset();
+    await fly(from.firstElementChild, to, 900);
+    to.innerHTML = cargo[mode];
+    await wait(500);
+    if (mode === 'bare') {
+      result.className = 'result bad';
+      result.textContent = "$ python3 agent.py\nModuleNotFoundError: No module named 'requests'";
+      cap.textContent = '程序到了，它依赖的东西没跟过来，一运行就报错。你得登上服务器，把缺的一样一样装齐，版本还要对得上。';
+    } else {
+      result.className = 'result ok';
+      result.textContent = '$ docker run agent\n启动成功，agent 正在运行';
+      cap.textContent = '容器把程序和环境一起带走了。服务器上原来装了什么、没装什么，都不影响它。';
+    }
+    busy = false; go.disabled = false;
+  });
+  reset();
+});
+
+/* ---------- 3 层：一次访问的七步 ---------- */
+safe('net', () => {
+  const svg = $('#netSvg'); if (!svg) return;
+  const pkt = $('#netPkt'), pktT = $('#netPktT'), pktBg = $('#netPktBg'), resBox = $('#netRes');
+  const cap = $('#netCap'), count = $('#netCount'), prev = $('#netPrev'), next = $('#netNext'), autoB = $('#netAuto');
+  const P = {cTop: [95, 244], dns: [95, 118], c: [150, 290], r1: [300, 290], r2: [470, 230], r3: [640, 290], port: [784, 305]};
+  const setPkt = (x, y) => pkt.setAttribute('transform', `translate(${x},${y})`);
+  const move = mover(setPkt);
+  const label = txt => {
+    pktT.textContent = txt;
+    let w = 0;
+    if (txt) { try { w = pktT.getComputedTextLength(); } catch (e) {} if (!w) w = txt.length * 13; w += 18; }
+    pktBg.setAttribute('width', w); pktBg.setAttribute('x', -w / 2);
+  };
+  const lit = ids => $$('[data-node]', svg).forEach(n => n.classList.toggle('on', ids.includes(n.dataset.node)));
+  const reveal = n => $$('[data-from]', svg).forEach(el => el.classList.toggle('hid', n < +el.dataset.from || n > +(el.dataset.to || 99)));
+  const steps = [
+    {t: '你在浏览器里输入 api.example.com/weather?city=北京，按下回车。发起请求的这一方叫客户端。', on: ['client'],
+      run: async () => { pkt.classList.add('hid'); }},
+    {t: '电脑之间只认数字地址。所以第一件事是去问 DNS：api.example.com 这个名字，对应哪个地址？', on: ['client', 'dns'],
+      run: async a => { pkt.classList.remove('hid'); label('api.example.com 在哪？'); setPkt(...P.cTop); await move(P.cTop, P.dns, 900, a); }},
+    {t: 'DNS 查到了，回答 203.0.113.8。这串数字就是 IP 地址，相当于那台服务器的门牌。', on: ['client', 'dns'],
+      run: async a => { pkt.classList.remove('hid'); label('203.0.113.8'); setPkt(...P.dns); await move(P.dns, P.cTop, 900, a); }},
+    {t: '请求出发。它不会一步到位，要经过一串路由器接力，每一台只负责把它交给离目的地更近的下一台。这些中转点就是网络上的节点。', on: ['client'],
+      run: async a => {
+        pkt.classList.remove('hid'); label('请求'); setPkt(...P.c);
+        await move(P.c, P.r1, 700, a); if (!a()) return; lit(['r1']);
+        await move(P.r1, P.r2, 700, a); if (!a()) return; lit(['r1', 'r2']);
+        await move(P.r2, P.r3, 700, a); if (!a()) return; lit(['r1', 'r2', 'r3']);
+      }},
+    {t: '到了 203.0.113.8。一台服务器上跑着很多程序，各守一扇编了号的门，这个编号叫端口。HTTPS 的请求走 443 号门。', on: ['server'],
+      run: async a => { pkt.classList.remove('hid'); label('请求'); setPkt(...P.r3); await move(P.r3, P.port, 800, a); }},
+    {t: '443 号门后的程序读到一个 HTTP 请求：GET /weather?city=北京。意思是，请把北京的天气给我。', on: ['server'],
+      run: async () => { pkt.classList.add('hid'); }},
+    {t: '它回一个 HTTP 响应：状态码 200 表示成功，后面跟着数据。响应沿着节点接力回到你的电脑，浏览器把它显示出来。', on: ['server'],
+      run: async a => {
+        pkt.classList.remove('hid'); label('200 OK'); setPkt(...P.port);
+        await move(P.port, P.r3, 600, a); if (!a()) return; lit(['r3']);
+        await move(P.r3, P.r2, 600, a); if (!a()) return; lit(['r2']);
+        await move(P.r2, P.r1, 600, a); if (!a()) return; lit(['r1']);
+        await move(P.r1, P.c, 600, a); if (!a()) return;
+        lit(['client']); pkt.classList.add('hid'); resBox.classList.remove('hid');
+      }},
+  ];
+  let step = 1, token = 0, autoRun = 0;
+  const go = async n => {
+    step = n;
+    const my = ++token, alive = () => my === token, s = steps[n - 1];
+    cap.textContent = s.t;
+    count.textContent = `第 ${n} 步，共 ${steps.length} 步`;
+    prev.disabled = n === 1;
+    next.textContent = n === steps.length ? '回到第 1 步' : '下一步';
+    resBox.classList.add('hid');
+    reveal(n); lit(s.on);
+    await s.run(alive);
+  };
+  prev.addEventListener('click', () => { autoRun++; if (step > 1) go(step - 1); });
+  next.addEventListener('click', () => { autoRun++; go(step === steps.length ? 1 : step + 1); });
+  autoB.addEventListener('click', async () => {
+    const a = ++autoRun;
+    for (let i = 1; i <= steps.length; i++) {
+      if (a !== autoRun) return;
+      await go(i);
+      if (a !== autoRun) return;
+      await wait(1700);
+    }
+  });
+  go(1);
+});
+
+/* ---------- 3 层：代理 ---------- */
+safe('proxy', () => {
+  const svg = $('#pxSvg'); if (!svg) return;
+  const pkt = $('#pxPkt'), cap = $('#pxCap'), seen = $('#pxSeen'), res = $('#pxRes'), goB = $('#pxGo'), segs = $$('#pxMode button');
+  const setPkt = (x, y) => pkt.setAttribute('transform', `translate(${x},${y})`);
+  const move = mover(setPkt);
+  const lit = ids => $$('[data-node]', svg).forEach(n => n.classList.toggle('on', ids.includes(n.dataset.node)));
+  const intro = {
+    direct: '直连：请求从你的电脑直接发往目标服务。点“发一个请求”看看会怎样。',
+    proxy: '走代理：请求先发给一台中转服务器，由它替你转交。点“发一个请求”。',
+  };
+  let mode = 'direct', token = 0;
+  const setMode = m => {
+    mode = m; token++;
+    press(segs, segs.find(b => b.dataset.m === m));
+    svg.dataset.mode = m;
+    pkt.classList.add('hid'); pkt.classList.remove('stuck');
+    lit([]); seen.textContent = ''; res.textContent = '';
+    cap.textContent = intro[m];
+  };
+  segs.forEach(b => b.addEventListener('click', () => setMode(b.dataset.m)));
+  goB.addEventListener('click', async () => {
+    const my = ++token, a = () => my === token;
+    pkt.classList.remove('hid', 'stuck'); seen.textContent = ''; res.textContent = '';
+    lit(['client']);
+    if (mode === 'direct') {
+      setPkt(170, 220);
+      await move([170, 220], [462, 220], 1000, a); if (!a()) return;
+      pkt.classList.add('stuck');
+      await wait(1300); if (!a()) return;
+      pkt.classList.add('hid'); pkt.classList.remove('stuck');
+      res.textContent = '超时，没有回音'; seen.textContent = '没人来过';
+      cap.textContent = '请求卡在了半路，等到超时也没有回音。有些服务从你所在的网络直连不通，或者慢到没法用。';
+    } else {
+      setPkt(170, 205);
+      await move([170, 205], [415, 75], 800, a); if (!a()) return;
+      lit(['node']); await wait(350); if (!a()) return;
+      setPkt(565, 75);
+      await move([565, 75], [810, 205], 800, a); if (!a()) return;
+      lit(['target']); seen.textContent = '代理服务器';
+      await wait(700); if (!a()) return;
+      await move([810, 205], [565, 75], 700, a); if (!a()) return;
+      lit(['node']); setPkt(415, 75);
+      await move([415, 75], [170, 205], 700, a); if (!a()) return;
+      lit(['client']); pkt.classList.add('hid');
+      res.textContent = '收到回应';
+      cap.textContent = '节点替你把请求转交过去，再把回应带回来。目标服务看到的来访者是节点，不是你。平时说“换个节点”，换的就是这台中转服务器。';
+    }
+  });
+  setMode('direct');
+});
+
+/* ---------- 4 层：请求、SQL、JSON ---------- */
+safe('api', () => {
+  const root = $('#api'); if (!root) return;
+  const tbody = $('#apiTable tbody'), cap = $('#apiCap'), boxes = $$('.box', root);
+  const E = {req: $('#apiReq'), py: $('#apiPy'), sql: $('#apiSql'), res: $('#apiRes')};
+  const rows = [[1, '王芳', 28, '北京'], [2, '李强', 41, '上海'], [3, '赵磊', 35, '北京'], [4, '陈静', 22, '广州'], [5, '周敏', 33, '上海']];
+  const pick = list => '[\n' + list.map(r => `  {"name": "${r[1]}", "age": ${r[2]}}`).join(',\n') + '\n]';
+  const C = {
+    city: {
+      req: 'GET /users?city=北京', reqCap: '客户端发来一个 HTTP 请求。问号后面的 city=北京 是它带的参数。',
+      py: [['city = request.args["city"]', '取出参数'], ['rows = db.execute(sql, [city])', '去问数据库'], ['return jsonify(rows)', '结果变成 JSON']],
+      sql: "SELECT name, age\nFROM users\nWHERE city = '北京';",
+      sqlCap: '数据不在程序里，在数据库里。程序用 SQL 提问：从 users 表里挑出 city 是北京的行，只要 name 和 age 两列。',
+      match: r => r[3] === '北京', dbCap: '数据库一行一行比对，留下符合条件的两行。',
+    },
+    age: {
+      req: 'GET /users?min_age=30', reqCap: '还是同一个地址，换了一个参数：min_age=30。',
+      py: [['n = request.args["min_age"]', '取出参数'], ['rows = db.execute(sql, [n])', '去问数据库'], ['return jsonify(rows)', '结果变成 JSON']],
+      sql: 'SELECT name, age\nFROM users\nWHERE age > 30;',
+      sqlCap: '条件换成了 age > 30。SQL 读起来接近英语：选出哪几列，从哪张表，满足什么条件。',
+      match: r => r[2] > 30, dbCap: '数据库一行一行比对，这次留下三行。',
+    },
+    add: {
+      req: 'POST /users\n{"name": "孙悦", "age": 24, "city": "成都"}', reqCap: 'POST 表示要提交新数据。数据本身是一段 JSON，跟在请求后面。',
+      py: [['user = request.json', '取出发来的 JSON'], ['db.execute(sql, user)', '让数据库存下来'], ['return jsonify(ok=True, id=6)', '告诉对方成了']],
+      sql: "INSERT INTO users (name, age, city)\nVALUES ('孙悦', 24, '成都');",
+      sqlCap: 'INSERT 是往表里加一行。',
+      insert: [6, '孙悦', 24, '成都'], dbCap: '表的末尾多了一行，数据库给它编了号：6。', res: '{"ok": true, "id": 6}',
+    },
+  };
+  let token = 0;
+  const drawTable = () => { tbody.innerHTML = rows.map(r => '<tr>' + r.map(v => `<td>${v}</td>`).join('') + '</tr>').join(''); };
+  const on = k => boxes.forEach(b => b.classList.toggle('on', b.dataset.k === k));
+  const play = async k => {
+    const my = ++token, alive = () => my === token, c = C[k];
+    drawTable();
+    Object.values(E).forEach(e => { e.textContent = ''; });
+    on('req'); E.req.textContent = c.req; cap.textContent = c.reqCap;
+    await wait(1600); if (!alive()) return;
+    on('py'); cap.textContent = '后端程序接住请求。它用 Python 写成，做三件事：取出参数，去问数据库，把结果送回去。';
+    for (const [code, note] of c.py) {
+      E.py.insertAdjacentHTML('beforeend', `<span class="c"># ${esc(note)}</span>\n${esc(code)}\n`);
+      await wait(700); if (!alive()) return;
+    }
+    await wait(500); if (!alive()) return;
+    on('sql'); cap.textContent = c.sqlCap;
+    for (const ch of c.sql) { E.sql.textContent += ch; await wait(16); if (!alive()) return; }
+    await wait(1100); if (!alive()) return;
+    on('db'); cap.textContent = c.dbCap;
+    const hits = [];
+    if (c.insert) {
+      await wait(400); if (!alive()) return;
+      tbody.insertAdjacentHTML('beforeend', '<tr class="new hit">' + c.insert.map(v => `<td>${v}</td>`).join('') + '</tr>');
+    } else {
+      const trs = $$('tr', tbody);
+      for (let i = 0; i < trs.length; i++) {
+        trs[i].classList.add('scan');
+        await wait(320); if (!alive()) return;
+        trs[i].classList.remove('scan');
+        if (c.match(rows[i])) { trs[i].classList.add('hit'); hits.push(rows[i]); }
+      }
+    }
+    await wait(1000); if (!alive()) return;
+    on('res'); E.res.textContent = c.res || pick(hits);
+    cap.textContent = '结果被整理成 JSON 送回客户端。这一整套约定就是 API：往哪个地址发，带什么参数，会收到什么格式。';
+  };
+  $$('[data-api]').forEach(b => b.addEventListener('click', () => play(b.dataset.api)));
+  drawTable();
+});
+
+/* ---------- 5 层：Git 存档图 ---------- */
+safe('git', () => {
+  const svg = $('#gitSvg'); if (!svg) return;
+  const cmd = $('#gitCmd'), cap = $('#gitCap');
+  const MAX = 9;
+  let commits, cycles, cur, seq, fresh;
+  const openCy = () => cycles.find(c => !c.merged);
+  const tryOf = cy => commits.filter(c => c.cyc === cy.id);
+  const byId = id => commits.find(c => c.id === id);
+  const mainHead = () => commits.filter(c => c.b === 'main').pop();
+  const head = () => {
+    if (cur === 'main') return mainHead();
+    const o = openCy(), t = tryOf(o);
+    return t.length ? t[t.length - 1] : byId(o.fork);
+  };
+  const draw = () => {
+    const X = i => 92 + i * 92, YM = 74, YT = 164;
+    const pos = c => [X(commits.indexOf(c)), c.b === 'main' ? YM : YT];
+    let h = `<text class="g-lane" x="10" y="${YM + 5}">主线</text>`;
+    if (cycles.length) h += `<text class="g-lane" x="10" y="${YT + 5}">分支</text>`;
+    const mains = commits.filter(c => c.b === 'main');
+    if (mains.length > 1) h += `<path class="g-line" d="M${pos(mains[0]).join(' ')} L${pos(mains[mains.length - 1]).join(' ')}"/>`;
+    let stub = null;
+    cycles.forEach(cy => {
+      const [fx, fy] = pos(byId(cy.fork)), ts = tryOf(cy);
+      if (!ts.length) { stub = [fx + 46, YT]; h += `<path class="g-line try dash" d="M${fx} ${fy} L${stub[0]} ${stub[1]}"/>`; return; }
+      let d = `M${fx} ${fy}`;
+      ts.forEach(t => { d += ` L${pos(t).join(' ')}`; });
+      if (cy.merged) d += ` L${pos(byId(cy.merged)).join(' ')}`;
+      h += `<path class="g-line try" d="${d}"/>`;
+    });
+    const hd = head();
+    commits.forEach(c => {
+      const [x, y] = pos(c);
+      h += `<g class="g-c${c.b === 'try' ? ' try' : ''}${c === hd ? ' head' : ''}${c.id === fresh ? ' fresh' : ''}"><circle cx="${x}" cy="${y}" r="20"/><text x="${x}" y="${y + 8}" text-anchor="middle">${c.id}</text></g>`;
+    });
+    let fx, fy;
+    if (cur === 'main') { [fx, fy] = pos(hd); fy -= 34; }
+    else if (stub) { [fx, fy] = stub; fy += 26; }
+    else { [fx, fy] = pos(hd); fy += 46; }
+    h += `<text class="g-flag" x="${fx}" y="${fy}" text-anchor="middle">你在这里</text>`;
+    svg.innerHTML = h;
+    fresh = null;
+  };
+  const say = (c, t) => { cmd.textContent = c; cap.textContent = t; draw(); };
+  const init = () => {
+    commits = [{id: 1, b: 'main'}]; cycles = []; cur = 'main'; seq = 1; fresh = null;
+    say('git init', '一个新仓库，里面只有第一个存档。点“提交一次”，再存一个。');
+  };
+  const full = () => commits.length >= MAX;
+  $('#gitCommit').addEventListener('click', () => {
+    if (full()) return say(cmd.textContent, openCy() && tryOf(openCy()).length ? '图快画满了。还能点“合并回主线”，或者点“重来”。' : '图画满了。点“重来”再试。');
+    const c = {id: ++seq, b: cur};
+    if (cur === 'try') c.cyc = openCy().id;
+    commits.push(c); fresh = c.id;
+    say(`git commit -m "存档 ${c.id}"`, cur === 'main'
+      ? '主线上多了一个存档点。每次提交，Git 都记下当时所有文件的样子。'
+      : '这个存档只记在分支上，主线一点没动。');
+  });
+  $('#gitBranch').addEventListener('click', () => {
+    if (openCy()) return say(cmd.textContent, '已经在分支上了。先合并回主线，再开新的。');
+    cycles.push({id: cycles.length + 1, fork: mainHead().id, merged: null});
+    cur = 'try';
+    say('git switch -c try', '从当前存档岔出一条分支，名字叫 try。接下来的提交都记在分支上，试坏了也不影响主线。让 Agent 在分支上干活，是同一个道理。');
+  });
+  $('#gitMerge').addEventListener('click', () => {
+    const o = openCy();
+    if (!o) return say(cmd.textContent, '现在没有分支可以合并。先开一个分支。');
+    if (!tryOf(o).length) return say(cmd.textContent, '分支上还没有新存档，没什么可合并的。先提交一次。');
+    const m = {id: ++seq, b: 'main', merge: true};
+    commits.push(m); o.merged = m.id; cur = 'main'; fresh = m.id;
+    say('git switch main && git merge try', '分支上的改动并回了主线，多出一个合并存档。试验成功的东西，就这样转正。');
+  });
+  $('#gitUndo').addEventListener('click', () => {
+    const last = commits[commits.length - 1];
+    if (commits.length === 1) return say(cmd.textContent, '只剩第一个存档了，没有更早的可以回。');
+    if (cur === 'try' && !tryOf(openCy()).length) return say(cmd.textContent, '分支上还没有存档可以撤。');
+    if (last.merge || cycles.some(c => c.fork === last.id)) return say(cmd.textContent, '撤销合并也做得到，这里先不演示。可以接着提交，或者点“重来”。');
+    commits.pop(); seq = last.id - 1;
+    say('git reset --hard HEAD~1', '回到了上一个存档，刚才那次提交被丢掉了。Agent 把代码改坏时，这是你的后悔药。想留下记录，可以改用 git revert：它用一次新提交把上一次抵消掉。');
+  });
+  $('#gitReset').addEventListener('click', init);
+  init();
+});
+
+/* ---------- 5 层：上线流水线 ---------- */
+safe('ship', () => {
+  const st = $$('#shipSt li'); if (!st.length) return;
+  const log = $('#shipLog'), cap = $('#shipCap');
+  let token = 0;
+  const say = (t, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; const m = t.match(/^(\[[^\]]+\])\s*(.*)$/); d.innerHTML = m ? `<span class="lg">${esc(m[1])}</span>${esc(m[2])}` : esc(t); log.appendChild(d); };
+  const play = async kind => {
+    const my = ++token, a = () => my === token;
+    st.forEach(li => { li.className = ''; }); log.innerHTML = ''; cap.textContent = '';
+    const at = async (i, cls, text, tcls) => { st[i].className = 'now'; await wait(700); if (!a()) return false; st[i].className = cls; say(text, tcls); await wait(500); return a(); };
+    const bugNote = kind === 'good' ? '' : '（里面藏着一个 bug）';
+    if (!await at(0, 'ok', `[写代码]  改了 login.py 的 2 行${bugNote}`)) return;
+    if (!await at(1, 'ok', `[Git]     提交 ${kind === 'good' ? 'a3f9c1' : 'b71e02'}：修复登录`)) return;
+    if (kind === 'good') {
+      if (!await at(2, 'ok', '[测试]    12 个测试全部通过', 'good')) return;
+      if (!await at(3, 'ok', '[部署]    新版本已上线')) return;
+      if (!await at(4, 'ok', '[日志]    10:02:11 INFO  用户登录成功 200', 'good')) return;
+      say('[日志]    10:02:14 INFO  用户登录成功 200', 'good');
+      cap.textContent = '一路绿灯。测试确认改对了，上线后日志里全是成功的记录。';
+    } else if (kind === 'bug') {
+      if (!await at(2, 'bad', '[测试]    test_login 失败：期望 200，实际 500', 'err')) return;
+      say('[流水线]  停在这里，没有部署');
+      cap.textContent = '测试把问题拦在了上线之前，用户什么都没感觉到。改好再提交一次就行。';
+    } else {
+      st[2].className = 'skip'; say('[测试]    跳过');
+      await wait(600); if (!a()) return;
+      if (!await at(3, 'ok', '[部署]    新版本已上线')) return;
+      if (!await at(4, 'bad', '[日志]    10:05:40 ERROR 登录接口报错 500', 'err')) return;
+      say('[日志]    10:05:41 ERROR 登录接口报错 500', 'err');
+      say('[监控]    错误率超过阈值，发出报警', 'err');
+      await wait(900); if (!a()) return;
+      if (!await at(1, 'ok', '[Git]     回滚到上一个存档 a3f9c1')) return;
+      if (!await at(3, 'ok', '[部署]    旧版本重新上线')) return;
+      if (!await at(4, 'ok', '[日志]    10:07:02 INFO  用户登录成功 200', 'good')) return;
+      cap.textContent = '没有测试把关，bug 到了用户面前，靠日志和监控才发现。因为 Git 里留着上一个存档，才能马上退回去。';
+    }
+  };
+  $$('[data-ship]').forEach(b => b.addEventListener('click', () => play(b.dataset.ship)));
+});
+
+/* ---------- 6 层：Agent 循环 ---------- */
+safe('loop', () => {
+  const svg = $('#loopSvg'); if (!svg) return;
+  const talk = $('#loopTalk'), cap = $('#loopCap'), lap = $('#loopLap');
+  const stepB = $('#loopStep'), autoB = $('#loopAuto'), resetB = $('#loopReset');
+  const S = [
+    {n: 'model', who: '模型在想', body: '用户问明天北京带不带伞。我不知道明天的天气，得先查。',
+      cap: '模型读完你的话，判断自己缺信息。它没法自己上网，只能提出请求。'},
+    {n: 'call', who: '模型发出工具调用', code: '{"tool": "get_weather",\n "input": {"city": "北京", "date": "明天"}}',
+      cap: '工具调用就是一小段 JSON：要用哪个工具，参数是什么。模型的输出到此为止，它什么都没执行。'},
+    {n: 'harness', who: 'Harness 执行', body: '向天气服务发 HTTP 请求：GET /weather?city=北京', floors: [3, 4],
+      cap: 'Harness 是包在模型外面的那层程序。它读懂这段 JSON，真的去发请求。这一步用到的全是 3 层和 4 层的东西。'},
+    {n: 'result', who: '结果送回模型', code: '{"weather": "小雨", "temp": 3}',
+      cap: '返回的 JSON 被放进对话的上下文，模型下一轮就能看到。一圈走完。'},
+    {n: 'model', lap: 2, who: '模型在想', body: '明天小雨。用户还让我记到备忘里，需要写一个文件。',
+      cap: '第二圈。事情还没做完，模型决定再调一个工具。下一步做什么由模型自己定，这是 agent 和固定流程的区别。'},
+    {n: 'call', who: '模型发出工具调用', code: '{"tool": "write_file",\n "input": {"path": "备忘/明天.md",\n           "content": "带伞，北京小雨 3℃"}}',
+      cap: '参数里出现了路径。路径写错，这一步就会失败。'},
+    {n: 'harness', who: 'Harness 执行', body: '先查权限：这个文件夹允许写吗？允许。于是在硬盘上写入文件。', floors: [1, 2],
+      cap: '写文件之前，harness 可以先拦一下，问你同不同意。权限、沙箱、日志，都由这一层负责。'},
+    {n: 'result', who: '结果送回模型', code: '{"ok": true}', cap: '写成功了，结果照样送回模型。'},
+    {n: 'model', who: '模型给出最终回答', body: '明天北京小雨，3℃，记得带伞。已经记到你的备忘里了。', final: true,
+      cap: '模型判断不再需要工具，循环结束。找一批这样的任务让它做，再给结果打分，就是 Eval。'},
+  ];
+  let i = 0, autoRun = 0;
+  const add = (cls, who, inner) => {
+    const li = document.createElement('li');
+    li.className = 'msg ' + cls;
+    li.innerHTML = `<b>${esc(who)}</b>${inner}`;
+    talk.appendChild(li);
+    talk.scrollTop = talk.scrollHeight;
+  };
+  const mark = n => {
+    $$('[data-node]', svg).forEach(g => g.classList.toggle('on', g.dataset.node === n));
+    $$('[data-arc]', svg).forEach(p => p.classList.toggle('on', p.dataset.arc === n));
+  };
+  const reset = () => {
+    autoRun++; i = 0;
+    talk.innerHTML = ''; mark(null); lap.textContent = '第 1 圈';
+    add('user', '你', esc('明天北京要带伞吗？顺便记到我的备忘里。'));
+    cap.textContent = '点“走一步”。看这句话怎样在模型和 harness 之间转圈。';
+    stepB.disabled = false; autoB.disabled = false;
+  };
+  const step = () => {
+    if (i >= S.length) return false;
+    const s = S[i++];
+    mark(s.n);
+    if (s.lap) lap.textContent = `第 ${s.lap} 圈`;
+    let inner = s.code ? `<pre>${esc(s.code)}</pre>` : esc(s.body);
+    if (s.floors) inner += '<div>' + s.floors.map(f => `<a class="chip-f" href="#f${f}" style="--f:var(--f${f})">落在 ${f} 层</a>`).join('') + '</div>';
+    add(s.final ? 'final' : s.n, s.who, inner);
+    cap.textContent = s.cap;
+    if (i >= S.length) { stepB.disabled = true; autoB.disabled = true; lap.textContent = '结束'; }
+    return i < S.length;
+  };
+  stepB.addEventListener('click', () => { autoRun++; step(); });
+  autoB.addEventListener('click', async () => {
+    const a = ++autoRun;
+    while (a === autoRun && step()) await wait(2200);
+  });
+  resetB.addEventListener('click', reset);
+  reset();
+});
+
+})();
+</script>
+</body>
+</html>
