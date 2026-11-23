@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <title>Agent 脚下的六层楼：计算机常识地图</title>
 <meta name="description" content="学 Agent 之前需要的计算机常识，分成六层，每层配可以动手点的动画。">
@@ -13,7 +13,7 @@
   --panel:#17283A; --panel-ink:#E4E7E3;
   --f1:#B8442B; --f2:#A96B06; --f3:#2B8A57; --f4:#0D8294; --f5:#2F5FC4; --f6:#6D45C2;
   --on-f:#FFFFFF; --ok:#1E8E4E; --bad:#C6352B;
-  --din:"DIN Condensed","DIN Alternate","Bahnschrift","Roboto Condensed","Arial Narrow",sans-serif;
+  --din:"DIN Condensed","DIN Alternate","Bahnschrift","Roboto Condensed","sans-serif-condensed","Arial Narrow",sans-serif;
   --han:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
   --code:"SF Mono",ui-monospace,Menlo,Consolas,"PingFang SC",monospace;
   --lift:86px;
@@ -104,7 +104,7 @@ main{margin-left:var(--lift)}
 .stage-intro{max-width:36em;margin-top:6px;color:var(--ink2)}
 .canvas{margin-top:20px;background:var(--plate);border-radius:14px;padding:22px}
 .scroll-x{overflow-x:auto}
-.scroll-x svg{display:block;width:100%;min-width:700px;height:auto}
+.scroll-x svg{display:block;width:100%;min-width:640px;height:auto}
 .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
 .btn{appearance:none;border:2px solid var(--ink);background:var(--ink);color:var(--concrete);font-weight:600;font-size:15px;line-height:1.25;padding:10px 16px;border-radius:8px;cursor:pointer;text-align:left}
 .btn.line{background:transparent;color:var(--ink)}
@@ -148,7 +148,10 @@ h4 small{font-weight:400;color:var(--ink2);margin-left:6px}
 .code-lines li.on::before{color:inherit}
 
 /* 1 层：路径 */
-.path{display:grid;grid-template-columns:minmax(250px,1fr) 1.3fr;gap:24px;align-items:start}
+.path{display:grid;grid-template-columns:minmax(250px,1fr) 1.3fr;grid-template-rows:auto 1fr;grid-template-areas:"tree ctl" "tree cap";column-gap:24px}
+.path-ctl{grid-area:ctl;min-width:0}
+.tree{grid-area:tree}
+.path .caption{grid-area:cap;align-self:start}
 .tree{background:var(--concrete);border-radius:10px;padding:10px}
 .node{display:flex;align-items:center;gap:8px;width:100%;padding:4px 8px;padding-left:calc(8px + var(--d)*20px);border:0;background:transparent;border-radius:6px;font-size:15px;line-height:1.6;text-align:left;margin:2px 0;transition:background .2s,color .2s}
 button.node{cursor:pointer;font-weight:600;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:var(--f)}
@@ -232,9 +235,9 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
 .pkt text{fill:var(--concrete);font-size:14px;font-weight:600}
 .pkt.stuck circle{fill:var(--bad)}
 .barrier path{stroke:var(--bad);stroke-width:5;stroke-linecap:round;fill:none}
-#pxSvg .direct,#pxSvg .via,#pxSvg .barrier{transition:opacity .3s}
-#pxSvg[data-mode="direct"] .via{opacity:.3}
-#pxSvg[data-mode="proxy"] .direct{opacity:.3}
+.px .direct,.px .via,.px .barrier{transition:opacity .3s}
+.px[data-mode="direct"] .via{opacity:.3}
+.px[data-mode="proxy"] .direct{opacity:.3}
 
 /* 4 层 */
 .api{display:grid;gap:12px}
@@ -339,6 +342,7 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
   .fl{width:40px;height:40px;font-size:23px}
   main{padding-bottom:70px}
   .tower-wrap,.run,.path,.slice,.shell,.dock,.api-flow,.api-data,.loop{grid-template-columns:1fr}
+  .path{grid-template-rows:auto;grid-template-areas:"ctl" "tree" "cap";row-gap:14px}
   .road{width:6px;height:36px;justify-self:center;background:repeating-linear-gradient(180deg,var(--rule) 0 12px,transparent 12px 20px)}
   .floor-head{flex-direction:column;align-items:flex-start;gap:20px}
   .stations small{display:none}
@@ -359,6 +363,190 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
   .canvas{padding:14px}
   .anno{grid-template-columns:1fr}
   .anno code{border-bottom:0;padding-bottom:0}
+}
+/* ============ 手机专用 ============ */
+.only-phone{display:none!important}
+.narrow,.narrow-b,br.narrow-br{display:none}
+.tt tbody th{cursor:pointer}
+button,a,input{touch-action:manipulation}
+button{-webkit-tap-highlight-color:transparent}
+.btn:active:not(:disabled),.seg button:active{transform:scale(.97)}
+.hint{font-size:13px;color:var(--ink2);margin-top:4px}
+svg.only-phone .t{font-size:15px}
+svg.only-phone .sub{font-size:13px}
+svg.only-phone .mono{font-size:12.5px}
+svg.only-phone .mono.s{font-size:11.8px}
+svg.only-phone .ip{font-size:14px}
+svg.only-phone .door-n{font-size:13px;font-weight:700}
+svg.only-phone .door-d{font-size:10.5px}
+svg.only-phone .pkt text{font-size:13px}
+.compact .g-c text{font-size:16px}
+.compact .g-c circle,.compact .g-line{stroke-width:3}
+.compact .g-flag,.compact .g-lane{font-size:12.5px}
+@supports not (color:color-mix(in srgb,red 50%,blue)){
+  .slabs a,.proc,.crate{background:var(--plate)}
+  .lane.on{background:var(--sunk)}
+}
+@media (max-width:720px){
+  .only-wide,.wide{display:none!important}
+  .only-phone{display:block!important}
+  .narrow{display:inline}
+  .narrow-b{display:inline-block}
+  br.narrow-br{display:inline}
+  body{font-size:16px;line-height:1.75}
+  .wrap{padding:0 16px}
+  .lift{height:calc(58px + env(safe-area-inset-bottom));padding:0 6px env(safe-area-inset-bottom)}
+  .lift{gap:4px}
+  .lift ol{gap:4px}
+  .fl{width:40px;height:40px;font-size:23px}
+  .lift .word{padding:12px 6px}
+  main{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+
+  .hero{padding:32px 0 52px}
+  .hero h1{font-size:46px;line-height:1.1}
+  .lede{margin-top:16px;font-size:16px}
+  .tower-wrap{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-top:26px}
+  .trip{display:contents}
+  .trip .ask{order:1;font-size:16.5px}
+  .tower{order:2;--slab-h:46px;--slab-gap:4px;grid-template-columns:34px 1fr;gap:8px}
+  .trip-steps{order:3;margin-top:0}
+  .trip .controls{order:4;margin-top:0}
+  .cab{left:5px;right:5px;top:5px;height:calc(var(--slab-h) - 10px)}
+  .cab::after{top:6px;bottom:6px}
+  .slabs a{grid-template-columns:42px 1fr;border-left-width:8px;border-radius:6px;padding-right:8px}
+  .slabs b{font-size:34px;transform:translateY(3px)}
+  .slabs .nm{font-size:15.5px}
+  .trip-steps li{display:none}
+  .trip-steps li.cur{display:block}
+  .trip-steps button,.trip-steps button.on{opacity:1;background:var(--plate);padding:10px 12px;min-height:98px;align-content:start;cursor:default}
+  .trip .controls .btn{flex:1 1 0}
+
+  .floor{padding:34px 0 60px;border-top-width:10px}
+  .floor-head{display:grid;grid-template-columns:auto 1fr;gap:0 14px;align-items:start}
+  .floor-num{font-size:108px;top:.06em}
+  .floor-num small{font-size:15px;margin-left:2px}
+  .floor h2,.learn h2{font-size:27px;line-height:1.25}
+  .floor-lede{font-size:16px;margin-top:8px}
+
+  .stage{margin-top:46px}
+  .stage h3,.terms h3,.plan h3,.learn h3.sub-h{font-size:21px}
+  .stage-intro{font-size:15px;line-height:1.65}
+  .canvas{margin-top:14px;padding:12px;border-radius:12px}
+  .canvas.scroll-x{padding:8px;overflow:visible}
+  .scroll-x svg{min-width:0}
+  .controls{gap:8px;margin-top:12px}
+  .btn{min-height:46px;padding:8px 12px;text-align:center}
+  .controls>.btn{flex:1 1 auto;padding:8px 8px;font-size:14.5px}
+  .seg button{min-height:46px;padding:6px 10px;font-size:14.5px}
+  .caption{font-size:15px;line-height:1.65;margin-top:12px;min-height:5em;padding-left:12px}
+  .aside{font-size:14.5px;line-height:1.7}
+  .zone{padding:10px 12px}
+  h4{font-size:14px}
+
+  .run{gap:8px}
+  .files{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .tile{padding:5px 7px;font-size:13px;gap:5px}
+  .tile .ic{width:17px;height:17px}
+  .procs{grid-template-columns:repeat(3,1fr);gap:6px;min-height:56px;margin-top:8px}
+  .procs .empty{grid-column:1/-1}
+  .proc{padding:6px 8px;border-left-width:5px;font-size:12.5px;min-width:0}
+  .proc b{font-size:13px}
+  .cpu-row{margin-top:8px;gap:10px}
+  .chip{width:46px;height:46px;font-size:20px}
+  .cpu-now{font-size:13.5px}
+  .code-lines{margin-top:8px;font-size:12.5px;line-height:1.8}
+
+  #pathMode{display:grid;grid-template-columns:1.5fr 1fr 1fr;width:100%}
+  .path-str{font-size:16px;margin-top:10px;min-height:3.1em}
+  .path-str .dim{font-size:14.5px}
+  .tree{padding:6px}
+  .node{font-size:14.5px;padding:2px 6px 2px calc(6px + var(--d)*13px);margin:1px 0;min-height:30px}
+  button.node{min-height:40px}
+  .path .caption{margin-top:0;min-height:0}
+
+  .slice{gap:10px}
+  .lane{grid-template-columns:7em 1fr;gap:8px;padding:8px 10px}
+  .lane-name{font-size:14px}
+  .lane-name code{font-size:11.5px}
+  .sched{display:flex;align-items:center;gap:12px;text-align:left}
+  .sched .chip{margin:0;width:46px;height:46px;font-size:20px}
+  .sched p{margin-top:0;min-height:0;font-size:14px}
+  #sliceSpeed{display:grid;grid-template-columns:repeat(3,1fr);width:100%}
+  .seg .sub-l{display:block;font-weight:400;font-size:12px;margin-top:1px}
+  #sliceToggle{flex-basis:100%}
+
+  .plain.cards thead{display:none}
+  .plain.cards tr{display:block;padding:12px 0;border-top:1px solid var(--rule)}
+  .plain.cards th,.plain.cards td{display:block;border:0;padding:0;font-size:15px}
+  .plain.cards tbody th{font-size:17px;margin-bottom:2px;white-space:normal}
+  .plain.cards td[data-l]::before{content:attr(data-l) "：";color:var(--ink2);font-size:13.5px}
+  .plain.reslist td:last-child{font-size:14px;color:var(--ink2);margin-top:2px}
+
+  .shell{gap:8px}
+  .finder{min-height:0;padding:10px 12px}
+  .crumb{margin-top:6px;font-size:13px;padding:4px 8px}
+  .icons{margin-top:6px;gap:6px}
+  .preview{margin-top:6px;font-size:13px;padding:6px 10px}
+  .tty{height:148px;font-size:12.5px;line-height:1.7;padding:10px 12px}
+  .cmds{flex-wrap:nowrap;overflow-x:auto;margin:12px -16px 0;padding:0 16px 4px;scroll-snap-type:x proximity;scrollbar-width:none}
+  .cmds::-webkit-scrollbar{display:none}
+  .cmds .btn{flex:none;text-align:left;scroll-snap-align:start;scroll-margin-left:16px}
+
+  .dock .zone>h4{display:inline;margin-right:6px}
+  .env{display:inline-flex;margin-top:0;vertical-align:middle;gap:4px}
+  .env li{font-size:12px;padding:0 8px}
+  .slot{min-height:92px;margin-top:8px;padding:8px}
+  .road{height:18px}
+  .crate{grid-template-columns:auto auto;gap:5px;padding:6px 10px 10px}
+  .crate>b{grid-column:1/-1}
+  .result{margin-top:6px;font-size:12px;min-height:2.8em}
+
+  .api,.api-flow,.api-data{gap:6px}
+  .box{padding:5px 12px;border-width:2px}
+  .box h4{display:flex;align-items:baseline;gap:6px;cursor:pointer;min-height:26px;line-height:26px}
+  .box h4 small{margin-left:0}
+  .box h4::after{content:"展开";margin-left:auto;font-weight:400;font-size:12px;color:var(--ink2)}
+  .box.on h4::after,.box.open h4::after{content:""}
+  .box:not(.on):not(.open)>:not(h4){display:none}
+  .box pre,.api-data .box pre{min-height:0;margin-top:4px;font-size:12.3px}
+  .dbt{font-size:13px;margin-top:2px}
+  .dbt th,.dbt td{padding:1px 6px}
+  .anno code{font-size:13px}
+
+  #gitCommit,#gitBranch,#gitMerge,#gitUndo,#gitReset{flex:1 1 0;padding:8px 4px;font-size:14.5px}
+  .cmdline{margin-top:8px;font-size:12.5px;padding:6px 10px}
+
+  .stations li{padding:0 1px}
+  .stations::before{top:15px;height:5px}
+  .stations .dot{width:36px;height:36px;margin-bottom:6px;font-size:17px;border-width:3px}
+  .stations b{font-size:12.5px}
+  .logbox{margin-top:12px;font-size:11.5px;line-height:1.7;padding:10px 12px;min-height:118px;max-height:172px;overflow:auto}
+  .logbox .lg{width:auto;margin-right:6px}
+
+  .loop{gap:10px}
+  .loop svg{max-width:276px;margin:0 auto}
+  .talk{max-height:none;gap:6px}
+  .talk .msg:not(:first-child):not(:last-child){display:none}
+  .msg{font-size:13.5px;padding:8px 12px}
+  .msg pre{font-size:11.8px}
+
+  .terms{margin-top:52px}
+  .tt tr{grid-template-columns:40px 1fr;padding:12px 0}
+  .tt input{width:24px;height:24px;margin-top:2px}
+  .tt tbody th{font-size:17px;white-space:normal}
+  .tt td{font-size:15px;line-height:1.65}
+  .tt td:last-child{font-size:14px;margin-top:4px}
+
+  .learn{padding:38px 0 80px}
+  .plan{margin-top:26px;gap:30px}
+  .plan>li{grid-template-columns:32px 1fr;column-gap:12px}
+  .plan>li::before{font-size:52px}
+  .todo{padding-left:1.1em}
+  .todo li{font-size:15px}
+  .learn h3.sub-h{margin-top:44px}
+  .known{margin-top:40px;gap:10px}
+  .known strong{font-size:36px}
+  .foot{margin-top:36px;font-size:13px}
 }
 </style>
 </head>
@@ -391,7 +579,7 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
 
 <header class="hero" id="top">
   <div class="wrap">
-    <h1>Agent 脚下的六层楼</h1>
+    <h1>Agent <br class="narrow-br">脚下的六层楼</h1>
     <p class="lede">你让 Agent 做一件事，它的每个动作都落在下面某一层：读文件，敲命令，发请求，查数据，存档。学 Agent 时听不懂的词，多半是这几层里的常识。这一页把六层各走一遍，每层都有能动手点的动画。</p>
 
     <div class="tower-wrap">
@@ -411,8 +599,10 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
         <p class="ask">你对 Agent 说：<q>帮我修好登录失败的 bug。</q>它接下来的每一步，落在哪一层？</p>
         <ol class="trip-steps" id="tripSteps"></ol>
         <div class="controls">
+          <button class="btn line narrow-b" type="button" id="tripPrev">上一步</button>
           <button class="btn" type="button" id="tripNext">下一步</button>
-          <button class="btn line" type="button" id="tripPlay">从头自动走一遍</button>
+          <button class="btn line" type="button" id="tripPlay"><span class="wide">从头</span>自动<span class="wide">走一遍</span><span class="narrow">播放</span></button>
+          <span class="count narrow" id="tripCount"></span>
         </div>
       </div>
     </div>
@@ -462,18 +652,18 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
 
     <div class="stage">
       <h3>路径是文件的地址</h3>
-      <p class="stage-intro">点左边任意一个带下划线的文件，看它的地址怎样一段一段写出来。再换一种写法试试。</p>
+      <p class="stage-intro">点任意一个带下划线的文件，看它的地址怎样一段一段写出来。再换一种写法试试。</p>
       <div class="canvas path">
-        <div class="tree" id="pathTree"></div>
-        <div>
+        <div class="path-ctl">
           <div class="seg" id="pathMode" role="group" aria-label="路径的写法">
             <button type="button" data-m="mac" aria-pressed="true">macOS 和 Linux</button>
             <button type="button" data-m="win" aria-pressed="false">Windows</button>
             <button type="button" data-m="rel" aria-pressed="false">相对路径</button>
           </div>
-          <p class="path-str" id="pathStr" aria-live="polite"><span class="dim">先在左边点一个文件</span></p>
-          <p class="caption" id="pathCap"></p>
+          <p class="path-str" id="pathStr" aria-live="polite"></p>
         </div>
+        <div class="tree" id="pathTree"></div>
+        <p class="caption" id="pathCap"></p>
       </div>
     </div>
 
@@ -519,9 +709,9 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
       </div>
       <div class="controls">
         <div class="seg" id="sliceSpeed" role="group" aria-label="轮换速度">
-          <button type="button" data-s="slow" aria-pressed="true">慢放：每秒换 1 次</button>
-          <button type="button" data-s="mid" aria-pressed="false">快一点：每秒换 3 次</button>
-          <button type="button" data-s="real" aria-pressed="false">真实速度：每秒换上百次</button>
+          <button type="button" data-s="slow" aria-pressed="true">慢放<span class="wide">：</span><span class="sub-l">每秒换 1 次</span></button>
+          <button type="button" data-s="mid" aria-pressed="false">快一点<span class="wide">：</span><span class="sub-l">每秒换 3 次</span></button>
+          <button type="button" data-s="real" aria-pressed="false">真实速度<span class="wide">：</span><span class="sub-l">每秒换上百次</span></button>
         </div>
         <button class="btn" type="button" id="sliceToggle">开始</button>
       </div>
@@ -530,12 +720,12 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
 
     <div class="stage">
       <h3>三种操作系统</h3>
-      <table class="plain">
+      <table class="plain cards">
         <thead><tr><th></th><th>你在哪见到它</th><th>路径长什么样</th><th>它的命令行</th></tr></thead>
         <tbody>
-          <tr><th scope="row">Windows</th><td>大多数个人电脑和办公电脑</td><td><code>C:\Users\you\a.txt</code></td><td>PowerShell</td></tr>
-          <tr><th scope="row">macOS</th><td>苹果电脑</td><td><code>/Users/you/a.txt</code></td><td>终端，默认用 zsh</td></tr>
-          <tr><th scope="row">Linux</th><td>服务器、云主机、Docker 容器</td><td><code>/home/you/a.txt</code></td><td>终端，常用 bash</td></tr>
+          <tr><th scope="row">Windows</th><td data-l="在哪见到">大多数个人电脑和办公电脑</td><td data-l="路径写法"><code>C:\Users\you\a.txt</code></td><td data-l="命令行">PowerShell</td></tr>
+          <tr><th scope="row">macOS</th><td data-l="在哪见到">苹果电脑</td><td data-l="路径写法"><code>/Users/you/a.txt</code></td><td data-l="命令行">终端，默认用 zsh</td></tr>
+          <tr><th scope="row">Linux</th><td data-l="在哪见到">服务器、云主机、Docker 容器</td><td data-l="路径写法"><code>/home/you/a.txt</code></td><td data-l="命令行">终端，常用 bash</td></tr>
         </tbody>
       </table>
       <p class="aside">macOS 和 Linux 是近亲，教程里的命令两边大多通用。Windows 的命令和路径写法都不一样，想照着教程敲，通常先装 WSL，它在 Windows 里开出一个 Linux。服务器几乎都是 Linux，所以 Agent 的教程默认你在用 Linux 或 macOS。</p>
@@ -543,7 +733,7 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
 
     <div class="stage">
       <h3>Shell：用打字代替点鼠标</h3>
-      <p class="stage-intro">左边是你熟悉的文件夹窗口，右边是终端。点一条命令，看两边同时发生了什么。</p>
+      <p class="stage-intro"><span class="wide">左边</span><span class="narrow">上面</span>是你熟悉的文件夹窗口，<span class="wide">右边</span><span class="narrow">下面</span>是终端。点一条命令，看两边同时发生了什么。</p>
       <div class="canvas shell">
         <div class="finder">
           <h4>文件夹窗口<small>用鼠标</small></h4>
@@ -556,6 +746,7 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
         </div>
       </div>
       <div class="cmds" id="shCmds"></div>
+      <p class="hint only-phone">命令可以左右滑动，后面还有。</p>
       <p class="caption" id="shCap" aria-live="polite">终端里那一行 <code>you@mac 项目 %</code> 叫提示符，意思是：我在“项目”这个文件夹里，等你下命令。</p>
     </div>
 
@@ -581,7 +772,7 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
           <button type="button" data-m="bare" aria-pressed="true">只搬程序</button>
           <button type="button" data-m="box" aria-pressed="false">装进容器再搬</button>
         </div>
-        <button class="btn" type="button" id="dkGo">搬到服务器并运行</button>
+        <button class="btn" type="button" id="dkGo">搬<span class="wide">到服务器</span><span class="narrow">过去</span>并运行</button>
       </div>
       <p class="caption" id="dkCap" aria-live="polite">“在我电脑上明明能跑”是程序员最常说的一句话。问题通常不在程序，在程序周围的环境。</p>
     </div>
@@ -618,7 +809,7 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
       <h3>一次访问走过的路</h3>
       <p class="stage-intro">从你按下回车，到结果显示出来，中间有七步。</p>
       <div class="canvas scroll-x">
-        <svg id="netSvg" viewBox="0 0 980 440" role="img" aria-labelledby="netTitle">
+        <svg id="netSvg" class="only-wide" viewBox="0 0 980 440" role="img" aria-labelledby="netTitle">
           <title id="netTitle">一次网络访问：客户端先问 DNS，再经过三台路由器到达服务器的 443 端口</title>
           <g class="wire"><path class="dash" d="M95 250 L95 110"/><path d="M150 290 L300 290 L470 230 L640 290 L800 305"/></g>
 
@@ -647,15 +838,45 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
 
           <g data-from="6"><rect class="notebox" x="528" y="376" width="252" height="40" rx="6"/><text class="mono" x="542" y="401">GET /weather?city=北京</text></g>
           <g data-from="1" data-to="6"><rect class="notebox" x="20" y="376" width="330" height="40" rx="20"/><text class="mono" x="40" y="401">api.example.com/weather?city=北京</text></g>
-          <g id="netRes" class="hid"><rect class="notebox good" x="20" y="376" width="330" height="40" rx="6"/><text class="mono" x="34" y="401">200 OK {"city":"北京","temp":3}</text></g>
+          <g class="res hid"><rect class="notebox good" x="20" y="376" width="330" height="40" rx="6"/><text class="mono" x="34" y="401">200 OK {"city":"北京","temp":3}</text></g>
 
-          <g id="netPkt" class="pkt hid"><rect id="netPktBg" y="-46" height="26" rx="6"/><text id="netPktT" y="-28" text-anchor="middle"></text><circle r="11"/></g>
+          <g class="pkt hid"><rect class="pkt-bg" y="-46" height="26" rx="6"/><text class="pkt-t" y="-28" text-anchor="middle"></text><circle r="11"/></g>
+        </svg>
+        <svg id="netSvgP" class="only-phone" viewBox="0 0 360 516" role="img" aria-labelledby="netTitleP">
+          <title id="netTitleP">一次网络访问：客户端先问 DNS，再经过三台路由器到达服务器的 443 端口</title>
+          <g class="wire"><path class="dash" d="M124 52 L232 52"/><path d="M52 96 L74 190 L226 252 L116 322 L219 404"/></g>
+
+          <g class="nd" data-node="client"><rect class="bx" x="14" y="14" width="110" height="82" rx="8"/><use href="#i-laptop" x="49" y="17" width="40" height="40"/><text class="t" x="69" y="80" text-anchor="middle">客户端</text></g>
+          <g class="nd" data-node="dns"><rect class="bx" x="232" y="22" width="114" height="60" rx="8"/><text class="t" x="289" y="58" text-anchor="middle">DNS 服务器</text></g>
+          <text class="sub" x="346" y="101" text-anchor="end">域名查地址的电话簿</text>
+          <g data-from="1" data-to="6"><rect class="notebox" x="96" y="110" width="250" height="28" rx="14"/><text class="mono s" x="108" y="129">api.example.com/weather?city=北京</text></g>
+          <g class="res hid"><rect class="notebox good" x="96" y="110" width="250" height="28" rx="6"/><text class="mono s" x="106" y="129">200 OK {"city":"北京","temp":3}</text></g>
+
+          <g class="nd" data-node="r1"><circle class="bx" cx="74" cy="190" r="22"/><use href="#i-router" x="60" y="176" width="28" height="28"/></g>
+          <text class="sub" x="104" y="195">路由器</text>
+          <g class="nd" data-node="r2"><circle class="bx" cx="226" cy="252" r="22"/><use href="#i-router" x="212" y="238" width="28" height="28"/></g>
+          <text class="sub" x="256" y="257">路由器</text>
+          <g class="nd" data-node="r3"><circle class="bx" cx="116" cy="322" r="22"/><use href="#i-router" x="102" y="308" width="28" height="28"/></g>
+          <text class="sub" x="146" y="327">路由器</text>
+          <text class="sub strong" data-from="4" x="238" y="186" text-anchor="middle">这些中转点就是节点</text>
+
+          <g class="nd" data-node="server"><rect class="bx" x="20" y="404" width="320" height="104" rx="8"/></g>
+          <text class="t" x="22" y="394">服务器</text>
+          <text class="mono ip" data-from="3" x="338" y="394" text-anchor="end">203.0.113.8</text>
+          <g class="port"><rect x="27" y="412" width="72" height="44" rx="5"/><text class="mono door-n" x="63" y="430" text-anchor="middle">22</text><text class="sub door-d" x="63" y="448" text-anchor="middle">远程登录</text></g>
+          <g class="port"><rect x="105" y="412" width="72" height="44" rx="5"/><text class="mono door-n" x="141" y="430" text-anchor="middle">80</text><text class="sub door-d" x="141" y="448" text-anchor="middle">HTTP</text></g>
+          <g class="port"><rect x="183" y="412" width="72" height="44" rx="5"/><text class="mono door-n" x="219" y="430" text-anchor="middle">443</text><text class="sub door-d" x="219" y="448" text-anchor="middle">HTTPS</text></g>
+          <g class="port"><rect x="261" y="412" width="72" height="44" rx="5"/><text class="mono door-n" x="297" y="430" text-anchor="middle">5432</text><text class="sub door-d" x="297" y="448" text-anchor="middle">数据库</text></g>
+          <g class="port hot" data-from="5"><rect x="183" y="412" width="72" height="44" rx="5"/><text class="mono door-n" x="219" y="430" text-anchor="middle">443</text><text class="door-d" x="219" y="448" text-anchor="middle">HTTPS</text></g>
+          <g data-from="6"><rect class="notebox" x="27" y="464" width="306" height="34" rx="6"/><text class="mono" x="38" y="486">GET /weather?city=北京</text></g>
+
+          <g class="pkt hid"><rect class="pkt-bg" y="-42" height="24" rx="6"/><text class="pkt-t" y="-25" text-anchor="middle"></text><circle r="10"/></g>
         </svg>
       </div>
       <div class="controls">
         <button class="btn line" type="button" id="netPrev">上一步</button>
         <button class="btn" type="button" id="netNext">下一步</button>
-        <button class="btn line" type="button" id="netAuto">从头自动播放</button>
+        <button class="btn line" type="button" id="netAuto"><span class="wide">从头</span>自动播放</button>
         <span class="count" id="netCount"></span>
       </div>
       <p class="caption" id="netCap" aria-live="polite"></p>
@@ -665,7 +886,7 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
       <h3>代理和节点</h3>
       <p class="stage-intro">有时两台电脑之间的直路走不通。代理就是找一台两边都连得上的服务器，在中间转交。</p>
       <div class="canvas scroll-x">
-        <svg id="pxSvg" viewBox="0 0 980 320" role="img" aria-labelledby="pxTitle" data-mode="direct">
+        <svg id="pxSvg" class="px only-wide" viewBox="0 0 980 320" role="img" aria-labelledby="pxTitle" data-mode="direct">
           <title id="pxTitle">直连和走代理两条路线的对比</title>
           <g class="wire direct"><path d="M170 220 L810 220"/></g>
           <g class="wire via"><path d="M170 205 L415 75"/><path d="M565 75 L810 205"/></g>
@@ -674,9 +895,22 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
           <g class="nd via" data-node="node"><rect class="bx" x="415" y="30" width="150" height="70" rx="8"/><text class="t" x="490" y="71" text-anchor="middle">代理服务器</text></g>
           <text class="sub" x="580" y="42">平时说的“节点”</text><text class="sub" x="580" y="64">就是它</text>
           <g class="nd" data-node="target"><rect class="bx" x="810" y="180" width="130" height="80" rx="8"/><use href="#i-server" x="853" y="184" width="44" height="44"/><text class="t" x="875" y="250" text-anchor="middle">目标服务</text></g>
-          <text class="sub" x="875" y="286" text-anchor="middle">它看到的来访者</text><text class="t" id="pxSeen" x="875" y="310" text-anchor="middle"></text>
-          <text class="t" id="pxRes" x="105" y="292" text-anchor="middle"></text>
-          <g id="pxPkt" class="pkt hid"><circle r="11"/></g>
+          <text class="sub" x="875" y="286" text-anchor="middle">它看到的来访者</text><text class="t seen" x="875" y="310" text-anchor="middle"></text>
+          <text class="t res" x="105" y="292" text-anchor="middle"></text>
+          <g class="pkt hid"><circle r="11"/></g>
+        </svg>
+        <svg id="pxSvgP" class="px only-phone" viewBox="0 0 360 296" role="img" aria-labelledby="pxTitleP" data-mode="direct">
+          <title id="pxTitleP">直连和走代理两条路线的对比</title>
+          <g class="wire direct"><path d="M112 58 L248 58"/></g>
+          <g class="wire via"><path d="M100 100 L142 196"/><path d="M222 196 L258 100"/></g>
+          <g class="barrier direct"><path d="M171 45 L189 71 M189 45 L171 71"/><text class="sub" x="180" y="30" text-anchor="middle">直连不通或很慢</text></g>
+          <g class="nd" data-node="client"><rect class="bx" x="12" y="16" width="100" height="84" rx="8"/><use href="#i-laptop" x="42" y="19" width="40" height="40"/><text class="t" x="62" y="84" text-anchor="middle">你的电脑</text></g>
+          <g class="nd" data-node="target"><rect class="bx" x="248" y="16" width="100" height="84" rx="8"/><use href="#i-server" x="278" y="20" width="40" height="40"/><text class="t" x="298" y="84" text-anchor="middle">目标服务</text></g>
+          <g class="nd via" data-node="node"><rect class="bx" x="110" y="196" width="140" height="60" rx="8"/><text class="t" x="180" y="232" text-anchor="middle">代理服务器</text></g>
+          <text class="sub" x="180" y="280" text-anchor="middle">平时说的“节点”就是它</text>
+          <text class="sub" x="348" y="122" text-anchor="end">它看到的来访者</text><text class="t seen" x="348" y="144" text-anchor="end"></text>
+          <text class="t res" x="12" y="128"></text>
+          <g class="pkt hid"><circle r="10"/></g>
         </svg>
       </div>
       <div class="controls">
@@ -723,9 +957,9 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
       <h3>请求到了服务器之后</h3>
       <p class="stage-intro">选一个请求，看它怎样变成一句 SQL，从表里取出数据，再变成 JSON 送回去。</p>
       <div class="controls">
-        <button class="btn" type="button" data-api="city">查北京的用户</button>
-        <button class="btn" type="button" data-api="age">查 30 岁以上的用户</button>
-        <button class="btn" type="button" data-api="add">新增一个用户</button>
+        <button class="btn" type="button" data-api="city">查北京<span class="wide">的用户</span></button>
+        <button class="btn" type="button" data-api="age">查 30 岁以上<span class="wide">的用户</span></button>
+        <button class="btn" type="button" data-api="add">新增<span class="wide">一个</span>用户</button>
       </div>
       <div class="canvas api" id="api">
         <div class="api-flow">
@@ -734,7 +968,7 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
           <div class="box" data-k="sql"><h4>它写给数据库的 SQL</h4><pre id="apiSql"></pre></div>
         </div>
         <div class="api-data">
-          <div class="box" data-k="db"><h4>数据库里的 users 表</h4>
+          <div class="box open" data-k="db"><h4>数据库里的 users 表</h4>
             <table class="dbt" id="apiTable"><thead><tr><th>id</th><th>name</th><th>age</th><th>city</th></tr></thead><tbody></tbody></table>
           </div>
           <div class="box" data-k="res"><h4>回给客户端的 JSON</h4><pre id="apiRes"></pre></div>
@@ -796,10 +1030,10 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
         <p class="cmdline" id="gitCmd" aria-live="polite"></p>
       </div>
       <div class="controls">
-        <button class="btn" type="button" id="gitCommit">提交一次</button>
-        <button class="btn line" type="button" id="gitBranch">开一个分支</button>
-        <button class="btn line" type="button" id="gitMerge">合并回主线</button>
-        <button class="btn line" type="button" id="gitUndo">退回上一个存档</button>
+        <button class="btn" type="button" id="gitCommit">提交<span class="wide">一次</span></button>
+        <button class="btn line" type="button" id="gitBranch">开<span class="wide">一个</span>分支</button>
+        <button class="btn line" type="button" id="gitMerge">合并<span class="wide">回主线</span></button>
+        <button class="btn line" type="button" id="gitUndo">退回<span class="wide">上一个存档</span></button>
         <button class="btn line" type="button" id="gitReset">重来</button>
       </div>
       <p class="caption" id="gitCap" aria-live="polite"></p>
@@ -814,7 +1048,7 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
           <li><span class="dot"></span><b>Git 提交</b><small>存档，随时能退</small></li>
           <li><span class="dot"></span><b>自动测试</b><small>检查改得对不对</small></li>
           <li><span class="dot"></span><b>部署</b><small>放到服务器上</small></li>
-          <li><span class="dot"></span><b>日志与监控</b><small>盯着线上的表现</small></li>
+          <li><span class="dot"></span><b>日志<span class="wide">与</span>监控</b><small>盯着线上的表现</small></li>
         </ol>
         <div class="logbox" id="shipLog" role="log" aria-label="流水线记录"></div>
       </div>
@@ -927,7 +1161,7 @@ svg .ip{font-size:17px;font-weight:700;fill:var(--f)}
     </ol>
 
     <h3 class="sub-h">可以看的东西</h3>
-    <table class="plain">
+    <table class="plain cards reslist">
       <thead><tr><th>想补哪里</th><th>看什么</th><th>说明</th></tr></thead>
       <tbody>
         <tr><th scope="row">整栋楼的直觉</th><td><a href="https://www.bilibili.com/video/BV1EW411u7th" target="_blank" rel="noopener">《计算机科学速成课》</a>，B 站，40 集，中文字幕</td><td>先看上面点名的十集，其余的不急。</td></tr>
@@ -960,6 +1194,9 @@ const wait = ms => new Promise(r => setTimeout(r, reduce ? Math.min(ms, 80) : ms
 const safe = (name, fn) => { try { fn(); } catch (e) { console.error('[' + name + ']', e); } };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const press = (btns, on) => btns.forEach(b => b.setAttribute('aria-pressed', String(b === on)));
+const mqPhone = matchMedia('(max-width: 720px)');
+const isPhone = () => mqPhone.matches;
+const onLayout = fn => { if (mqPhone.addEventListener) mqPhone.addEventListener('change', fn); else if (mqPhone.addListener) mqPhone.addListener(fn); };
 
 /* 把一个元素的分身从原地飞到目标位置 */
 function fly(el, target, ms = 750) {
@@ -1031,6 +1268,10 @@ safe('terms', () => {
     b.checked = !!known[b.dataset.k];
     b.addEventListener('change', () => { known[b.dataset.k] = b.checked; save(); update(); });
   });
+  $$('.tt tbody th').forEach(th => th.addEventListener('click', () => {
+    const b = $('input[data-k]', th.parentElement);
+    if (b) { b.checked = !b.checked; b.dispatchEvent(new Event('change')); }
+  }));
   const reset = $('#knownReset');
   if (reset) reset.addEventListener('click', () => { known = {}; boxes.forEach(b => b.checked = false); save(); update(); });
   update();
@@ -1047,7 +1288,7 @@ safe('trip', () => {
     {f: 5, code: 'bash("pytest && git commit -m \'修复登录\'")', note: '跑测试确认修好了，再用 Git 存档。'},
     {f: 6, act: '答：修好了，一共改了 2 行', note: '循环结束。整个过程由 harness 驱动和记录。'},
   ];
-  const tower = $('#tower'), list = $('#tripSteps'), next = $('#tripNext'), playB = $('#tripPlay');
+  const tower = $('#tower'), list = $('#tripSteps'), next = $('#tripNext'), playB = $('#tripPlay'), prevB = $('#tripPrev'), countEl = $('#tripCount');
   const slabs = $$('.slabs a');
   list.innerHTML = steps.map((s, i) => `<li><button type="button" data-i="${i}" style="--f:var(--f${s.f})"><span class="tag"><i>${s.f}</i></span><span class="act">${s.code ? '<code>' + esc(s.code) + '</code>' : esc(s.act)}</span><span class="note">${esc(s.note)}</span></button></li>`).join('');
   const btns = $$('button', list);
@@ -1055,7 +1296,8 @@ safe('trip', () => {
   const show = i => {
     cur = i;
     const s = steps[i];
-    btns.forEach((b, j) => { b.classList.toggle('on', j === i); j === i ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current'); });
+    btns.forEach((b, j) => { b.classList.toggle('on', j === i); b.parentElement.classList.toggle('cur', j === i); j === i ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current'); });
+    countEl.textContent = `${i + 1} / ${steps.length}`;
     slabs.forEach(a => a.classList.toggle('on', +a.dataset.floor === s.f));
     tower.style.setProperty('--at', 6 - s.f);
     next.textContent = i === steps.length - 1 ? '回到第一步' : '下一步';
@@ -1066,6 +1308,7 @@ safe('trip', () => {
   };
   btns.forEach(b => b.addEventListener('click', () => { token++; show(+b.dataset.i); }));
   next.addEventListener('click', () => { token++; show((cur + 1) % steps.length); });
+  prevB.addEventListener('click', () => { token++; show((cur - 1 + steps.length) % steps.length); });
   playB.addEventListener('click', play);
   show(0);
   if (!reduce) setTimeout(play, 1000);
@@ -1088,7 +1331,7 @@ safe('run', () => {
     procs.forEach(p => {
       const el = $(`.proc[data-pid="${p.pid}"]`, procsEl); if (!el) return;
       el.classList.toggle('on', p === active);
-      $('span', el).textContent = `chat.py，运行到第 ${p.line} 行`;
+      $('span', el).innerHTML = `<span class="wide">chat.py，运行到</span>第 ${p.line} 行`;
     });
     lines.forEach((li, i) => li.classList.toggle('on', !!active && active.line === i + 1));
     chip.classList.toggle('busy', !!active);
@@ -1153,7 +1396,7 @@ safe('path', () => {
     rel: '相对路径：从你此刻所在的文件夹算起，这里是“项目”。两个点 .. 表示上一层。Agent 报“找不到文件”，常常是因为它以为自己站在另一个文件夹里。',
   };
   let mode = 'mac', picked = null, token = 0;
-  const hint = '<span class="dim">先在左边点一个文件</span>';
+  const hint = '<span class="dim">先点一个带下划线的文件</span>';
   const build = () => {
     tree.innerHTML = N.map(n => {
       const label = n.id === 'root' ? esc(mode === 'win' ? 'C:\\' : '/') + ' <span class="empty">最外层</span>' : esc(n.id);
@@ -1308,7 +1551,7 @@ safe('shell', () => {
       say = '硬盘上的 main.py 被读进内存，成了一个进程，它的输出打印在终端里。这就是 1 层讲的“程序变进程”。';
     } else if (cmd === 'mkdir') {
       if (n.dir[arg]) { out = `mkdir: ${arg}: File exists`; err = true; say = '同名的文件夹已经存在，所以报错。命令行的报错大多是这个格式：哪条命令，对着什么，出了什么问题。'; }
-      else { n.dir[arg] = {dir: {}}; fresh = arg; say = 'mkdir 新建了一个文件夹，左边窗口里多了一个图标。它没有任何输出：在命令行里，不说话通常就是成功。'; }
+      else { n.dir[arg] = {dir: {}}; fresh = arg; say = 'mkdir 新建了一个文件夹，文件夹窗口里多了一个图标。它没有任何输出：在命令行里，不说话通常就是成功。'; }
     }
     if (out) line(`<span${err ? ' class="err"' : ''}>${esc(out)}</span>`);
     drawGui(fresh); drawCmds();
@@ -1366,10 +1609,17 @@ safe('docker', () => {
 
 /* ---------- 3 层：一次访问的七步 ---------- */
 safe('net', () => {
-  const svg = $('#netSvg'); if (!svg) return;
-  const pkt = $('#netPkt'), pktT = $('#netPktT'), pktBg = $('#netPktBg'), resBox = $('#netRes');
+  const wide = $('#netSvg'), slim = $('#netSvgP'); if (!wide || !slim) return;
   const cap = $('#netCap'), count = $('#netCount'), prev = $('#netPrev'), next = $('#netNext'), autoB = $('#netAuto');
-  const P = {cTop: [95, 244], dns: [95, 118], c: [150, 290], r1: [300, 290], r2: [470, 230], r3: [640, 290], port: [784, 305]};
+  const LAY = {
+    wide: {svg: wide, ask: 'api.example.com 在哪？', P: {cTop: [95, 244], dns: [95, 118], c: [150, 290], r1: [300, 290], r2: [470, 230], r3: [640, 290], port: [784, 305]}},
+    slim: {svg: slim, ask: '在哪？', P: {cTop: [130, 52], dns: [226, 52], c: [52, 100], r1: [74, 190], r2: [226, 252], r3: [116, 322], port: [219, 398]}},
+  };
+  let L, svg, P, pkt, pktT, pktBg, resBox;
+  const bind = () => {
+    L = isPhone() ? LAY.slim : LAY.wide; svg = L.svg; P = L.P;
+    pkt = $('.pkt', svg); pktT = $('.pkt-t', svg); pktBg = $('.pkt-bg', svg); resBox = $('.res', svg);
+  };
   const setPkt = (x, y) => pkt.setAttribute('transform', `translate(${x},${y})`);
   const move = mover(setPkt);
   const label = txt => {
@@ -1384,7 +1634,7 @@ safe('net', () => {
     {t: '你在浏览器里输入 api.example.com/weather?city=北京，按下回车。发起请求的这一方叫客户端。', on: ['client'],
       run: async () => { pkt.classList.add('hid'); }},
     {t: '电脑之间只认数字地址。所以第一件事是去问 DNS：api.example.com 这个名字，对应哪个地址？', on: ['client', 'dns'],
-      run: async a => { pkt.classList.remove('hid'); label('api.example.com 在哪？'); setPkt(...P.cTop); await move(P.cTop, P.dns, 900, a); }},
+      run: async a => { pkt.classList.remove('hid'); label(L.ask); setPkt(...P.cTop); await move(P.cTop, P.dns, 900, a); }},
     {t: 'DNS 查到了，回答 203.0.113.8。这串数字就是 IP 地址，相当于那台服务器的门牌。', on: ['client', 'dns'],
       run: async a => { pkt.classList.remove('hid'); label('203.0.113.8'); setPkt(...P.dns); await move(P.dns, P.cTop, 900, a); }},
     {t: '请求出发。它不会一步到位，要经过一串路由器接力，每一台只负责把它交给离目的地更近的下一台。这些中转点就是网络上的节点。', on: ['client'],
@@ -1431,13 +1681,20 @@ safe('net', () => {
       await wait(1700);
     }
   });
-  go(1);
+  bind(); go(1);
+  onLayout(() => { autoRun++; bind(); go(1); });
 });
 
 /* ---------- 3 层：代理 ---------- */
 safe('proxy', () => {
-  const svg = $('#pxSvg'); if (!svg) return;
-  const pkt = $('#pxPkt'), cap = $('#pxCap'), seen = $('#pxSeen'), res = $('#pxRes'), goB = $('#pxGo'), segs = $$('#pxMode button');
+  const wide = $('#pxSvg'), slim = $('#pxSvgP'); if (!wide || !slim) return;
+  const cap = $('#pxCap'), goB = $('#pxGo'), segs = $$('#pxMode button');
+  const LAY = {
+    wide: {svg: wide, d0: [170, 220], d1: [462, 220], a0: [170, 205], a1: [415, 75], b0: [565, 75], b1: [810, 205]},
+    slim: {svg: slim, d0: [116, 58], d1: [164, 58], a0: [100, 104], a1: [142, 192], b0: [222, 192], b1: [258, 104]},
+  };
+  let L, svg, pkt, seen, res;
+  const bind = () => { L = isPhone() ? LAY.slim : LAY.wide; svg = L.svg; pkt = $('.pkt', svg); seen = $('.seen', svg); res = $('.res', svg); };
   const setPkt = (x, y) => pkt.setAttribute('transform', `translate(${x},${y})`);
   const move = mover(setPkt);
   const lit = ids => $$('[data-node]', svg).forEach(n => n.classList.toggle('on', ids.includes(n.dataset.node)));
@@ -1449,7 +1706,7 @@ safe('proxy', () => {
   const setMode = m => {
     mode = m; token++;
     press(segs, segs.find(b => b.dataset.m === m));
-    svg.dataset.mode = m;
+    wide.dataset.mode = m; slim.dataset.mode = m;
     pkt.classList.add('hid'); pkt.classList.remove('stuck');
     lit([]); seen.textContent = ''; res.textContent = '';
     cap.textContent = intro[m];
@@ -1460,30 +1717,31 @@ safe('proxy', () => {
     pkt.classList.remove('hid', 'stuck'); seen.textContent = ''; res.textContent = '';
     lit(['client']);
     if (mode === 'direct') {
-      setPkt(170, 220);
-      await move([170, 220], [462, 220], 1000, a); if (!a()) return;
+      setPkt(...L.d0);
+      await move(L.d0, L.d1, 1000, a); if (!a()) return;
       pkt.classList.add('stuck');
       await wait(1300); if (!a()) return;
       pkt.classList.add('hid'); pkt.classList.remove('stuck');
-      res.textContent = '超时，没有回音'; seen.textContent = '没人来过';
+      res.textContent = '超时，没回音'; seen.textContent = '没人来过';
       cap.textContent = '请求卡在了半路，等到超时也没有回音。有些服务从你所在的网络直连不通，或者慢到没法用。';
     } else {
-      setPkt(170, 205);
-      await move([170, 205], [415, 75], 800, a); if (!a()) return;
+      setPkt(...L.a0);
+      await move(L.a0, L.a1, 800, a); if (!a()) return;
       lit(['node']); await wait(350); if (!a()) return;
-      setPkt(565, 75);
-      await move([565, 75], [810, 205], 800, a); if (!a()) return;
+      setPkt(...L.b0);
+      await move(L.b0, L.b1, 800, a); if (!a()) return;
       lit(['target']); seen.textContent = '代理服务器';
       await wait(700); if (!a()) return;
-      await move([810, 205], [565, 75], 700, a); if (!a()) return;
-      lit(['node']); setPkt(415, 75);
-      await move([415, 75], [170, 205], 700, a); if (!a()) return;
+      await move(L.b1, L.b0, 700, a); if (!a()) return;
+      lit(['node']); setPkt(...L.a1);
+      await move(L.a1, L.a0, 700, a); if (!a()) return;
       lit(['client']); pkt.classList.add('hid');
       res.textContent = '收到回应';
       cap.textContent = '节点替你把请求转交过去，再把回应带回来。目标服务看到的来访者是节点，不是你。平时说“换个节点”，换的就是这台中转服务器。';
     }
   });
-  setMode('direct');
+  bind(); setMode('direct');
+  onLayout(() => { bind(); setMode(mode); });
 });
 
 /* ---------- 4 层：请求、SQL、JSON ---------- */
@@ -1519,9 +1777,11 @@ safe('api', () => {
   let token = 0;
   const drawTable = () => { tbody.innerHTML = rows.map(r => '<tr>' + r.map(v => `<td>${v}</td>`).join('') + '</tr>').join(''); };
   const on = k => boxes.forEach(b => b.classList.toggle('on', b.dataset.k === k));
+  boxes.forEach(b => $('h4', b).addEventListener('click', () => b.classList.toggle('open')));
   const play = async k => {
     const my = ++token, alive = () => my === token, c = C[k];
     drawTable();
+    boxes.forEach(b => b.classList.remove('open'));
     Object.values(E).forEach(e => { e.textContent = ''; });
     on('req'); E.req.textContent = c.req; cap.textContent = c.reqCap;
     await wait(1600); if (!alive()) return;
@@ -1550,6 +1810,7 @@ safe('api', () => {
     }
     await wait(1000); if (!alive()) return;
     on('res'); E.res.textContent = c.res || pick(hits);
+    boxes.find(b => b.dataset.k === 'db').classList.add('open');
     cap.textContent = '结果被整理成 JSON 送回客户端。这一整套约定就是 API：往哪个地址发，带什么参数，会收到什么格式。';
   };
   $$('[data-api]').forEach(b => b.addEventListener('click', () => play(b.dataset.api)));
@@ -1560,7 +1821,11 @@ safe('api', () => {
 safe('git', () => {
   const svg = $('#gitSvg'); if (!svg) return;
   const cmd = $('#gitCmd'), cap = $('#gitCap');
-  const MAX = 9;
+  const LAY = {
+    wide: {vb: '0 0 980 230', x0: 92, dx: 92, r: 20, ym: 74, yt: 164, max: 9, ty: 8, lx: 10, up: 34, dn: 46, stub: 46, sdn: 26},
+    slim: {vb: '0 0 360 166', x0: 48, dx: 48, r: 15, ym: 54, yt: 122, max: 6, ty: 6, lx: 2, up: 26, dn: 36, stub: 24, sdn: 22},
+  };
+  let G = LAY.wide;
   let commits, cycles, cur, seq, fresh;
   const openCy = () => cycles.find(c => !c.merged);
   const tryOf = cy => commits.filter(c => c.cyc === cy.id);
@@ -1572,16 +1837,18 @@ safe('git', () => {
     return t.length ? t[t.length - 1] : byId(o.fork);
   };
   const draw = () => {
-    const X = i => 92 + i * 92, YM = 74, YT = 164;
+    G = isPhone() ? LAY.slim : LAY.wide;
+    svg.setAttribute('viewBox', G.vb); svg.classList.toggle('compact', G === LAY.slim);
+    const X = i => G.x0 + i * G.dx, YM = G.ym, YT = G.yt;
     const pos = c => [X(commits.indexOf(c)), c.b === 'main' ? YM : YT];
-    let h = `<text class="g-lane" x="10" y="${YM + 5}">主线</text>`;
-    if (cycles.length) h += `<text class="g-lane" x="10" y="${YT + 5}">分支</text>`;
+    let h = `<text class="g-lane" x="${G.lx}" y="${YM + 5}">主线</text>`;
+    if (cycles.length) h += `<text class="g-lane" x="${G.lx}" y="${YT + 5}">分支</text>`;
     const mains = commits.filter(c => c.b === 'main');
     if (mains.length > 1) h += `<path class="g-line" d="M${pos(mains[0]).join(' ')} L${pos(mains[mains.length - 1]).join(' ')}"/>`;
     let stub = null;
     cycles.forEach(cy => {
       const [fx, fy] = pos(byId(cy.fork)), ts = tryOf(cy);
-      if (!ts.length) { stub = [fx + 46, YT]; h += `<path class="g-line try dash" d="M${fx} ${fy} L${stub[0]} ${stub[1]}"/>`; return; }
+      if (!ts.length) { stub = [fx + G.stub, YT]; h += `<path class="g-line try dash" d="M${fx} ${fy} L${stub[0]} ${stub[1]}"/>`; return; }
       let d = `M${fx} ${fy}`;
       ts.forEach(t => { d += ` L${pos(t).join(' ')}`; });
       if (cy.merged) d += ` L${pos(byId(cy.merged)).join(' ')}`;
@@ -1590,12 +1857,12 @@ safe('git', () => {
     const hd = head();
     commits.forEach(c => {
       const [x, y] = pos(c);
-      h += `<g class="g-c${c.b === 'try' ? ' try' : ''}${c === hd ? ' head' : ''}${c.id === fresh ? ' fresh' : ''}"><circle cx="${x}" cy="${y}" r="20"/><text x="${x}" y="${y + 8}" text-anchor="middle">${c.id}</text></g>`;
+      h += `<g class="g-c${c.b === 'try' ? ' try' : ''}${c === hd ? ' head' : ''}${c.id === fresh ? ' fresh' : ''}"><circle cx="${x}" cy="${y}" r="${G.r}"/><text x="${x}" y="${y + G.ty}" text-anchor="middle">${c.id}</text></g>`;
     });
     let fx, fy;
-    if (cur === 'main') { [fx, fy] = pos(hd); fy -= 34; }
-    else if (stub) { [fx, fy] = stub; fy += 26; }
-    else { [fx, fy] = pos(hd); fy += 46; }
+    if (cur === 'main') { [fx, fy] = pos(hd); fy -= G.up; }
+    else if (stub) { [fx, fy] = stub; fy += G.sdn; }
+    else { [fx, fy] = pos(hd); fy += G.dn; }
     h += `<text class="g-flag" x="${fx}" y="${fy}" text-anchor="middle">你在这里</text>`;
     svg.innerHTML = h;
     fresh = null;
@@ -1603,11 +1870,11 @@ safe('git', () => {
   const say = (c, t) => { cmd.textContent = c; cap.textContent = t; draw(); };
   const init = () => {
     commits = [{id: 1, b: 'main'}]; cycles = []; cur = 'main'; seq = 1; fresh = null;
-    say('git init', '一个新仓库，里面只有第一个存档。点“提交一次”，再存一个。');
+    say('git init', '一个新仓库，里面只有第一个存档。点“提交”，再存一个。');
   };
-  const full = () => commits.length >= MAX;
+  const full = () => commits.length >= G.max;
   $('#gitCommit').addEventListener('click', () => {
-    if (full()) return say(cmd.textContent, openCy() && tryOf(openCy()).length ? '图快画满了。还能点“合并回主线”，或者点“重来”。' : '图画满了。点“重来”再试。');
+    if (full()) return say(cmd.textContent, openCy() && tryOf(openCy()).length ? '图快画满了。还能点“合并”，或者点“重来”。' : '图画满了。点“重来”再试。');
     const c = {id: ++seq, b: cur};
     if (cur === 'try') c.cyc = openCy().id;
     commits.push(c); fresh = c.id;
@@ -1639,6 +1906,7 @@ safe('git', () => {
   });
   $('#gitReset').addEventListener('click', init);
   init();
+  onLayout(init);
 });
 
 /* ---------- 5 层：上线流水线 ---------- */
@@ -1646,7 +1914,7 @@ safe('ship', () => {
   const st = $$('#shipSt li'); if (!st.length) return;
   const log = $('#shipLog'), cap = $('#shipCap');
   let token = 0;
-  const say = (t, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; const m = t.match(/^(\[[^\]]+\])\s*(.*)$/); d.innerHTML = m ? `<span class="lg">${esc(m[1])}</span>${esc(m[2])}` : esc(t); log.appendChild(d); };
+  const say = (t, cls) => { const d = document.createElement('div'); if (cls) d.className = cls; const m = t.match(/^(\[[^\]]+\])\s*(.*)$/); d.innerHTML = m ? `<span class="lg">${esc(m[1])}</span>${esc(m[2])}` : esc(t); log.appendChild(d); log.scrollTop = log.scrollHeight; };
   const play = async kind => {
     const my = ++token, a = () => my === token;
     st.forEach(li => { li.className = ''; }); log.innerHTML = ''; cap.textContent = '';
